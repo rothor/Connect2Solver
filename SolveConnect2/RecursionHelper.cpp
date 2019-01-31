@@ -18,20 +18,18 @@ RecursionHelper::~RecursionHelper()
 
 std::string RecursionHelper::outputStr()
 {
-	std::string retStr = "Moves evaluated: " + std::to_string(movesEvaluated) + "\n" +
-		"Moves evaluated valid: " + std::to_string(movesEvaluatedValid) + "\n" +
-		"Depth: " + std::to_string(movesEvaluatedDepth) + "\n" +
-		"Solutions found: " + std::to_string(solution.size()) + "\n";
-
-	int i = 0;
-	retStr += "Solution (" + std::to_string(solution.size()) + " moves): ";
+	std::string retStr = "Moves evaluated: " + std::to_string(movesEvaluated) + "\n";
+		//"Moves evaluated valid: " + std::to_string(movesEvaluatedValid) + "\n";
+	
+	retStr += "Solution (" + std::to_string(solution.size()) + " moves):";
+	int prevPathId = -1;
 	for (MoveInput& mi : solution) {
-		retStr += std::to_string(game.getPathDisplayId(mi.pathId));
-		retStr += directionToChar(mi.direction);
-		retStr += " ";
+		if (mi.pathId != prevPathId)
+			retStr += "\n" + std::to_string(game.getPathDisplayId(mi.pathId)) + ": ";
+		prevPathId = mi.pathId;
+		retStr += directionToChar(mi.direction) + 'A' - 'a';
 	}
 	retStr += "\n";
-	i++;
 
 	return retStr;
 }
