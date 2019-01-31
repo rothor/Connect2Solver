@@ -155,6 +155,7 @@
     <ClCompile Include="BoardOccupy.cpp" />
     <ClCompile Include="Connect2.cpp" />
     <ClCompile Include="Direction.cpp" />
+    <ClCompile Include="GameInput.cpp" />
     <ClCompile Include="MoveInput.cpp" />
     <ClCompile Include="MoveInstructionsEnter.cpp" />
     <ClCompile Include="MoveInstructionsExit.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="BoardOccupy.h" />
     <ClInclude Include="Connect2.h" />
     <ClInclude Include="Direction.h" />
+    <ClInclude Include="GameInput.h" />
     <ClInclude Include="MoveInput.h" />
     <ClInclude Include="MoveInstructionsEnter.h" />
     <ClInclude Include="MoveInstructionsExit.h" />

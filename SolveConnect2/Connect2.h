@@ -6,6 +6,7 @@
 #include "Board.h"
 #include "MoveInput.h"
 #include "BoardOccupy.h"
+#include "GameInput.h"
 
 
 class Connect2
@@ -25,6 +26,7 @@ public:
 	std::string getDisplayStr();
 	std::string getIdStr();
 	std::string getIdStr2();
+	std::string getGameInputDisplayStr(GameInput gi);
 
 private:
 	int getPathIdFromDisplayId(int pathDisplayId);

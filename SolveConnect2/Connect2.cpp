@@ -329,3 +329,16 @@ int Connect2::getPathIdFromDisplayId(int pathDisplayId)
 
 	return 0;
 }
+
+std::string Connect2::getGameInputDisplayStr(GameInput gi)
+{
+	std::string retStr;
+	int prevPathId = -1;
+	for (const MoveInput& mi : gi.miArr) {
+		if (mi.pathId != prevPathId)
+			retStr += "\n" + std::to_string(getPathDisplayId(mi.pathId)) + ": ";
+		prevPathId = mi.pathId;
+		retStr += directionToChar(mi.direction) + 'A' - 'a'; // to upper
+	}
+	return retStr;
+}

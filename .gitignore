@@ -4,6 +4,7 @@
 # my added
 levels.txt
 in.txt
+out.txt
 
 # User-specific files
 *.suo
