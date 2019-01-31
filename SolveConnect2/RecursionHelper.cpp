@@ -21,6 +21,15 @@ std::string RecursionHelper::outputStr()
 	std::string retStr = "Moves evaluated: " + std::to_string(movesEvaluated) + "\n";
 		//"Moves evaluated valid: " + std::to_string(movesEvaluatedValid) + "\n";
 	
+	if (solution.size() == 0) {
+		retStr += "Solution not found.\n";
+		return retStr;
+	}
+
+	//
+
+	//
+
 	retStr += "Solution (" + std::to_string(solution.size()) + " moves):";
 	int prevPathId = -1;
 	for (MoveInput& mi : solution) {
