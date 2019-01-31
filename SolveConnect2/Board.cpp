@@ -32,8 +32,8 @@ Board::Board(std::string fileName)
 				int hyphen = pos.find_first_of(char('-'));
 				std::string xStr = pos.substr(0, hyphen);
 				std::string yStr = pos.substr(hyphen + 1);
-				int xInt = std::stoi(xStr);
-				int yInt = std::stoi(yStr);
+				int xInt = std::stoi(xStr) - 1; // The '- 1' is to account that the user will input
+				int yInt = std::stoi(yStr) - 1; // the x and y pos 1-indexed (instead of 0-indexed).
 				m_tileArr[x][y] = new TilePortal(Point(xInt, yInt));
 				//m_tileArr[x][y] = std::move(std::unique_ptr<TilePortal>(new TilePortal(Point(xInt, yInt))));
 			}

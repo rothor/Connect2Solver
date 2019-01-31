@@ -16,12 +16,10 @@ public:
 
 public:
 	Connect2 game;
-	std::list<Connect2> gameArr;
-	std::list<std::list<MoveInput>> solution;
-	std::list<MoveInput> move;
-	std::map<std::string, int> gameId;
+	std::list<std::list<MoveInput>> moveInputArrArr;
+	std::list<MoveInput> solution;
+	std::map<std::string, bool> gameStateId;
 	int movesEvaluated;
 	int movesEvaluatedValid;
 	int movesEvaluatedDepth;
-	int movesEvaluatedMaxDepth;
 };

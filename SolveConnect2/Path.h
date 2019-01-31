@@ -25,7 +25,7 @@ public:
 	Direction getDirection();
 	PathMove getMove(int index);
 	int getId();
-	std::string getIdStr();
+	std::string getMoveArrStr();
 	void reset();
 
 protected:

@@ -99,7 +99,7 @@ int Path::getId()
 	return m_id;
 }
 
-std::string Path::getIdStr()
+std::string Path::getMoveArrStr()
 {
 	if (m_move.size() == 0)
 		return std::string();

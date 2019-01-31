@@ -24,7 +24,7 @@ public:
 	MoveInstructions getMoveInstructions(Point ptStart, Point ptDest, PathInfoForBoard pathInfo);
 
 protected:
-	//std::vector<std::vector<std::unique_ptr<Tile>>> m_tileArr;
+	//std::vector<std::vector<std::shared_ptr<Tile>>> m_tileArr;
 	std::vector<std::vector<Tile*>> m_tileArr;
 	TileBlock m_blockTile;
 	int m_width;

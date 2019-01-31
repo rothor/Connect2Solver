@@ -74,6 +74,21 @@ bool Connect2::matches(Connect2& board)
 	return true;
 }
 
+bool Connect2::moveUserInput(MoveInput mi)
+{
+	// First, mi.pathId is converted from the display id to the actual id.
+	mi.pathId = getPathIdFromDisplayId(mi.pathId);
+
+	int length = m_path[mi.pathId].getLength();
+	bool moveValid = staticMove(mi, m_path[mi.pathId], m_board, m_boardOccupy);
+	if (moveValid) {
+		m_lastPathMoved = mi.pathId;
+		m_lastPathMovedLength = length;
+	}
+
+	return moveValid;
+}
+
 bool Connect2::move(MoveInput mi)
 {
 	int length = m_path[mi.pathId].getLength();
@@ -224,6 +239,13 @@ void Connect2::reset()
 	}
 }
 
+
+int Connect2::getPathDisplayId(int pathId)
+{
+	return m_path[pathId].getId();
+}
+
+// Returns string for displaying in the console output.
 std::string Connect2::getDisplayStr()
 {
 	std::vector<std::vector<std::string>> board;
@@ -233,11 +255,12 @@ std::string Connect2::getDisplayStr()
 	}
 
 	for (int i = 0; i < m_path.size(); i++) {
+		int displayId = m_path[i].getId();
 		Point pt = m_path[i].getStartPoint();
-		board[pt.x][pt.y] = std::to_string(i) + " ";
+		board[pt.x][pt.y] = std::to_string(displayId) + " ";
 		for (int j = 0; j < m_path[i].getLength(); j++) {
 			PathMove move = m_path[i].getMove(j);
-			board[move.ptDest.x][move.ptDest.y] = std::to_string(i) + " ";
+			board[move.ptDest.x][move.ptDest.y] = std::to_string(displayId) + " ";
 		}
 	}
 
@@ -252,6 +275,7 @@ std::string Connect2::getDisplayStr()
 	return ret;
 }
 
+// This is the old version.
 std::string Connect2::getIdStr()
 {
 	return getIdStr2();
@@ -264,7 +288,7 @@ std::string Connect2::getIdStr()
 
 	for (int i = 0; i < m_path.size(); i++) {
 		Point pt = m_path[i].getStartPoint();
-		board[pt.x][pt.y] = std::to_string(i);
+		board[pt.x][pt.y] = std::to_string(getPathDisplayId(i));
 		for (int j = 0; j < m_path[i].getLength(); j++) {
 			PathMove move = m_path[i].getMove(j);
 			board[move.ptDest.x][move.ptDest.y] = std::to_string(i);
@@ -281,12 +305,27 @@ std::string Connect2::getIdStr()
 	return ret;
 }
 
+// In general, this will give much shorter names than getMoveArrStr(), which is why
+// this is preferred.
 std::string Connect2::getIdStr2()
 {
 	std::string ret;
-	ret += m_path[0].getIdStr();
+	ret += m_path[0].getMoveArrStr();
 	for (int i = 1; i < m_path.size(); i++) {
-		ret += "-" + m_path[i].getIdStr();
+		ret += "-" + m_path[i].getMoveArrStr();
 	}
 	return ret;
+}
+
+/* Since this method returns 0 by default, it could lead to unexected behavior
+ * when the user inputs a wrong path id (it will operate on m_path[0] then).
+ */
+int Connect2::getPathIdFromDisplayId(int pathDisplayId)
+{
+	for (int i = 0; i < m_path.size(); i++) {
+		if (m_path[i].getId() == pathDisplayId)
+			return i;
+	}
+
+	return 0;
 }
