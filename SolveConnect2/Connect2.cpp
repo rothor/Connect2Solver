@@ -133,7 +133,7 @@ bool staticMove(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccup
 
 bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy)
 {
-	path.setDirection(mi.direction);
+	Direction newDirection = mi.direction;
 	bool reset = false;
 	bool forced = false;
 	int startLength = path.getLength();
@@ -141,7 +141,7 @@ bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOcc
 
 	while (true) {
 		// Determine if we can do move
-		Point ptDest = path.getDestPoint();
+		Point ptDest = path.getDestPoint(newDirection);
 		Point ptStart = path.getPos();
 		MoveInstructions instr = board.getMoveInstructions(ptStart, ptDest, path.getInfoForBoard());
 		if (instr.mustTeleport) {
@@ -153,11 +153,7 @@ bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOcc
 		forced = instr.isForced;
 		if (!forced)
 			reset = false;
-		if (path.isFull())
-			break;
-		if (boardOccupy.isOccupied(ptDest))
-			break;
-		if (!instr.canEnter)
+		if (path.isFull() || boardOccupy.isOccupied(ptDest) || !instr.canEnter)
 			break;
 		
 		// Set stuff pre-move
@@ -165,13 +161,13 @@ bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOcc
 			lastValidLength = path.getLength();
 
 		// Do move
-		PathMove pathMove(ptStart, ptDest, path.getDirection(), instr.isForced, instr.mustTeleport);
+		PathMove pathMove(ptStart, ptDest, newDirection, instr.isForced, instr.mustTeleport);
 		path.doMove(pathMove);
 		boardOccupy.setOccupied(ptDest, true);
 
 		// Set stuff
 		if (instr.changeDirectionAfterMove)
-			path.setDirection(instr.newDirection);
+			newDirection = instr.newDirection;
 	}
 
 	if (reset) {
@@ -180,11 +176,8 @@ bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOcc
 			boardOccupy.setOccupied(pathMove.ptDest, false);
 			path.undoLastMove();
 		}
-
-		return false;
 	}
-
-	if (forced) {
+	else if (forced) {
 		while (path.getLength() > lastValidLength) {
 			PathMove pathMove = path.getLastMove();
 			boardOccupy.setOccupied(pathMove.ptDest, false);
@@ -210,7 +203,7 @@ bool staticMoveUndo(Path& path, Board& board, BoardOccupy& boardOccupy)
 	while (path.havePreviousMoves()) {
 		lastMove = path.getLastMove();
 
-		bool doUndo = lastMove.isForced || prevWasForced || lastMove.direction == prevDirection;
+		bool doUndo = prevWasForced || lastMove.direction == prevDirection;
 		if (!doUndo)
 			return true;
 
@@ -253,17 +246,18 @@ int min(int x, int y)
 // Returns string for displaying in the console output.
 std::string Connect2::getDisplayStr()
 {
-	std::string unnoccupiedTileStr = " . ";
+	std::string unnoccupiedTileStr = " ' ";
 	std::string occupiedTileStr = " o ";
 	std::string blockTileStr = "[x]";
 	std::string portalOccupiedStr = "(o)";
 	std::string portalUnnoccupiedStr = "( )";
-	std::string mirrorTileTlStr = " \/|";
-	std::string mirrorTileTrStr = "|\\ ";
-	std::string mirrorTileBlStr = " \\|";
-	std::string mirrorTileBrStr = "|\/ ";
-	std::string startTileStr = "*?*";
+	std::string mirrorTileTlStr = " \/+";
+	std::string mirrorTileTrStr = "+\\ ";
+	std::string mirrorTileBlStr = " \\+";
+	std::string mirrorTileBrStr = "+\/ ";
+	std::string startTileStr = " #?";
 	std::string endTileStr = "-?-";
+	std::string endTileOccupiedStr = "{?}";
 	std::string dirUp = " A ";
 	std::string dirDown = " V ";
 	std::string dirLeft = " < ";
@@ -274,7 +268,7 @@ std::string Connect2::getDisplayStr()
 	std::vector<std::vector<std::string>> board;
 	board.resize(m_width);
 	for (int i = 0; i < m_width; i++) {
-		board[i].resize(m_height, placeholderStr);
+		board[i].resize(m_height, unnoccupiedTileStr);
 	}
 	// Horizontal connections
 	std::vector<std::vector<std::string>> connHori;
@@ -312,7 +306,7 @@ std::string Connect2::getDisplayStr()
 				if (m_boardOccupy.isOccupied(Point(x, y)))
 					board[x][y] = occupiedTileStr;
 				else
-					board[x][y] = unnoccupiedTileStr;
+					; // board[x][y] = unnoccupiedTileStr;
 			}
 			else if (tile->m_type == TileType::block)
 				board[x][y] = blockTileStr;
@@ -341,13 +335,6 @@ std::string Connect2::getDisplayStr()
 				int pos = board[x][y].find("?");
 				board[x][y].replace(pos, 1, std::to_string(start->m_pathId));
 			}
-			else if (tile->m_type == TileType::end) {
-				Tile* tileNone = &*tile;
-				TileEnd* start = static_cast<TileEnd*>(tileNone);
-				board[x][y] = endTileStr;
-				int pos = board[x][y].find("?");
-				board[x][y].replace(pos, 1, std::to_string(start->m_pathId));
-			}
 		}
 	}
 	// Loop through each path
@@ -367,7 +354,24 @@ std::string Connect2::getDisplayStr()
 			board[m_path[i].getPos().x][m_path[i].getPos().y] = dirStr;
 		}
 	}
+	// Loop through each tile
+	for (int y = 0; y < m_height; y++) {
+		for (int x = 0; x < m_width; x++) {
+			std::shared_ptr<Tile> tile = m_board.getTile(x, y);
+			if (tile->m_type == TileType::end) {
+				Tile* tileNone = &*tile;
+				TileEnd* start = static_cast<TileEnd*>(tileNone);
+				if (m_boardOccupy.isOccupied(Point(x, y)))
+					board[x][y] = endTileOccupiedStr;
+				else
+					board[x][y] = endTileStr;
+				int pos = board[x][y].find("?");
+				board[x][y].replace(pos, 1, std::to_string(start->m_pathId));
+			}
+		}
+	}
 
+	// Start composing return string
 	std::string ret;
 	ret += " ";
 	for (int x = 0; x < m_width * 5 - 0; x++) {

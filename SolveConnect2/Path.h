@@ -18,7 +18,7 @@ public:
 	PathMove getLastMove();
 	void undoLastMove();
 	void setDirection(Direction pdirNew);
-	Point getDestPoint();
+	Point getDestPoint(Direction direction);
 	Point getStartPoint();
 	PathInfoForBoard getInfoForBoard();
 	int getLength();

@@ -34,6 +34,7 @@ void Path::doMove(PathMove move)
 {
 	m_move.push_back(move);
 	m_pos = move.ptDest;
+	m_direction = move.direction;
 	m_length++;
 }
 
@@ -47,6 +48,8 @@ void Path::undoLastMove()
 	m_pos = m_move.back().ptBegin;
 	m_move.pop_back();
 	m_length--;
+	if (m_move.size() > 0)
+		m_direction = m_move.back().direction;
 }
 
 void Path::setDirection(Direction pdirNew)
@@ -54,13 +57,13 @@ void Path::setDirection(Direction pdirNew)
 	m_direction = pdirNew;
 }
 
-Point Path::getDestPoint()
+Point Path::getDestPoint(Direction direction)
 {
-	if (m_direction == Direction::down)
+	if (direction == Direction::down)
 		return Point(m_pos.x, m_pos.y - 1);
-	else if (m_direction == Direction::up)
+	else if (direction == Direction::up)
 		return Point(m_pos.x, m_pos.y + 1);
-	else if (m_direction == Direction::left)
+	else if (direction == Direction::left)
 		return Point(m_pos.x - 1, m_pos.y);
 	else
 		return Point(m_pos.x + 1, m_pos.y);
