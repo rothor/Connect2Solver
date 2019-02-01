@@ -4,7 +4,7 @@
 TileEnd::TileEnd(int pathId) : Tile(),
 	m_pathId(pathId)
 {
-
+	m_type = TileType::end;
 }
 
 MoveInstructionsEnter TileEnd::getMoveInstructionsEnter(PathInfoForBoard pathInfo)

@@ -10,12 +10,10 @@ class Tile
 {
 public:
 	Tile();
-	~Tile();
 	
-	TileType getType();
 	virtual MoveInstructionsEnter getMoveInstructionsEnter(PathInfoForBoard pathInfo) = 0;
 	virtual MoveInstructionsExit getMoveInstructionsExit(PathInfoForBoard pathInfo) = 0;
 
-protected:
+public:
 	TileType m_type;
 };

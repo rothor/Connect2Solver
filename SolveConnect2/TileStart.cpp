@@ -4,7 +4,7 @@
 TileStart::TileStart(int pathId) : Tile(),
 	m_pathId(pathId)
 {
-
+	m_type = TileType::start;
 }
 
 MoveInstructionsEnter TileStart::getMoveInstructionsEnter(PathInfoForBoard pathInfo)

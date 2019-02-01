@@ -6,13 +6,3 @@ Tile::Tile() :
 {
 	
 }
-
-Tile::~Tile()
-{
-
-}
-
-TileType Tile::getType()
-{
-	return m_type;
-}

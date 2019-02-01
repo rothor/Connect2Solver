@@ -3,7 +3,7 @@
 
 TileNeutral::TileNeutral() : Tile()
 {
-	
+	m_type = TileType::neutral;
 }
 
 MoveInstructionsEnter TileNeutral::getMoveInstructionsEnter(PathInfoForBoard pathInfo)

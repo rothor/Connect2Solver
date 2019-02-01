@@ -17,16 +17,14 @@ class Board
 {
 public:
 	Board(std::string fileName);
-	~Board();
 
 	MoveInstructionsExit getMoveInstructionsExit(Point ptStart, PathInfoForBoard pathInfo);
 	MoveInstructionsEnter getMoveInstructionsEnter(Point ptDest, PathInfoForBoard pathInfo);
 	MoveInstructions getMoveInstructions(Point ptStart, Point ptDest, PathInfoForBoard pathInfo);
+	std::shared_ptr<Tile> getTile(int x, int y);
 
 protected:
-	//std::vector<std::vector<std::shared_ptr<Tile>>> m_tileArr;
-	std::vector<std::vector<Tile*>> m_tileArr;
-	TileBlock m_blockTile;
+	std::vector<std::vector<std::shared_ptr<Tile>>> m_tileArr;
 	int m_width;
 	int m_height;
 };

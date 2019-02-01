@@ -245,32 +245,163 @@ int Connect2::getPathDisplayId(int pathId)
 	return m_path[pathId].getId();
 }
 
+int min(int x, int y)
+{
+	return x < y ? x : y;
+}
+
 // Returns string for displaying in the console output.
 std::string Connect2::getDisplayStr()
 {
+	std::string unnoccupiedTileStr = " . ";
+	std::string occupiedTileStr = " o ";
+	std::string blockTileStr = "[x]";
+	std::string portalOccupiedStr = "(o)";
+	std::string portalUnnoccupiedStr = "( )";
+	std::string mirrorTileTlStr = " \/|";
+	std::string mirrorTileTrStr = "|\\ ";
+	std::string mirrorTileBlStr = " \\|";
+	std::string mirrorTileBrStr = "|\/ ";
+	std::string startTileStr = "*?*";
+	std::string endTileStr = "-?-";
+	std::string dirUp = " A ";
+	std::string dirDown = " V ";
+	std::string dirLeft = " < ";
+	std::string dirRight = " > ";
+	std::string placeholderStr = "???";
+
+	// Board vec
 	std::vector<std::vector<std::string>> board;
 	board.resize(m_width);
 	for (int i = 0; i < m_width; i++) {
-		board[i].resize(m_height, "- ");
+		board[i].resize(m_height, placeholderStr);
+	}
+	// Horizontal connections
+	std::vector<std::vector<std::string>> connHori;
+	connHori.resize(m_width - 1);
+	for (int i = 0; i < m_width - 1; i++) {
+		connHori[i].resize(m_height, "  ");
+	}
+	// Vertical connections
+	std::vector<std::vector<std::string>> connVert;
+	connVert.resize(m_width);
+	for (int i = 0; i < m_width; i++) {
+		connVert[i].resize(m_height - 1, " ");
 	}
 
+	// Loop through each path
 	for (int i = 0; i < m_path.size(); i++) {
-		int displayId = m_path[i].getId();
-		Point pt = m_path[i].getStartPoint();
-		board[pt.x][pt.y] = std::to_string(displayId) + " ";
+		// Loop through each path move
 		for (int j = 0; j < m_path[i].getLength(); j++) {
 			PathMove move = m_path[i].getMove(j);
-			board[move.ptDest.x][move.ptDest.y] = std::to_string(displayId) + " ";
+
+			// Set connection
+			if (!move.isTeleport) {
+				if (move.ptDest.x != move.ptBegin.x)
+					connHori[min(move.ptBegin.x, move.ptDest.x)][move.ptBegin.y] = "--";
+				else // else the y's must be different
+					connVert[move.ptBegin.x][min(move.ptBegin.y, move.ptDest.y)] = "|";
+			}
+		}
+	}
+	// Loop through each tile
+	for (int y = 0; y < m_height; y++) {
+		for (int x = 0; x < m_width; x++) {
+			std::shared_ptr<Tile> tile = m_board.getTile(x, y);
+			if (tile->m_type == TileType::neutral) {
+				if (m_boardOccupy.isOccupied(Point(x, y)))
+					board[x][y] = occupiedTileStr;
+				else
+					board[x][y] = unnoccupiedTileStr;
+			}
+			else if (tile->m_type == TileType::block)
+				board[x][y] = blockTileStr;
+			else if (tile->m_type == TileType::portal) {
+				if (m_boardOccupy.isOccupied(Point(x, y)))
+					board[x][y] = portalOccupiedStr;
+				else
+					board[x][y] = portalUnnoccupiedStr;
+			}
+			else if (tile->m_type == TileType::mirror) {
+				Tile* tileNone = &*tile; 
+				TileMirror* mirror = static_cast<TileMirror*>(tileNone);
+				if (mirror->m_mirrorType == MirrorType::bl)
+					board[x][y] = mirrorTileBlStr;
+				else if (mirror->m_mirrorType == MirrorType::br)
+					board[x][y] = mirrorTileBrStr;
+				else if (mirror->m_mirrorType == MirrorType::tl)
+					board[x][y] = mirrorTileTlStr;
+				else
+					board[x][y] = mirrorTileTrStr;
+			}
+			else if (tile->m_type == TileType::start) {
+				Tile* tileNone = &*tile;
+				TileStart* start = static_cast<TileStart*>(tileNone);
+				board[x][y] = startTileStr;
+				int pos = board[x][y].find("?");
+				board[x][y].replace(pos, 1, std::to_string(start->m_pathId));
+			}
+			else if (tile->m_type == TileType::end) {
+				Tile* tileNone = &*tile;
+				TileEnd* start = static_cast<TileEnd*>(tileNone);
+				board[x][y] = endTileStr;
+				int pos = board[x][y].find("?");
+				board[x][y].replace(pos, 1, std::to_string(start->m_pathId));
+			}
+		}
+	}
+	// Loop through each path
+	for (int i = 0; i < m_path.size(); i++) {
+		// Set path arrow
+		if (m_path[i].getLength() > 0) {
+			std::string dirStr;
+			Direction direction = m_path[i].getDirection();
+			if (direction == Direction::up)
+				dirStr = dirUp;
+			else if (direction == Direction::down)
+				dirStr = dirDown;
+			else if (direction == Direction::left)
+				dirStr = dirLeft;
+			else
+				dirStr = dirRight;
+			board[m_path[i].getPos().x][m_path[i].getPos().y] = dirStr;
 		}
 	}
 
 	std::string ret;
+	ret += " ";
+	for (int x = 0; x < m_width * 5 - 0; x++) {
+		ret += "-"; // top border
+	}
+	ret += "\n";
+
 	for (int y = m_height - 1; y >= 0; y--) {
+		ret += "| "; // left border
 		for (int x = 0; x < m_width; x++) {
 			ret += board[x][y];
+			if (x < m_width - 1)
+				ret += connHori[x][y];
 		}
+		ret += " |"; // right border
 		ret += "\n";
+
+		if (y > 0) {
+			ret += "|  "; // left border
+			for (int x = 0; x < m_width; x++) {
+				ret += connVert[x][y - 1];
+				if (x < m_width - 1)
+					ret += "    ";
+			}
+			ret += "  |"; // right border
+			ret += "\n";
+		}
 	}
+
+	ret += " ";
+	for (int x = 0; x < m_width * 5 - 0; x++) {
+		ret += "-"; // bottom border
+	}
+	ret += "\n";
 
 	return ret;
 }

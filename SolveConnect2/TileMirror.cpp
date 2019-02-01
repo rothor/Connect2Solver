@@ -2,9 +2,9 @@
 
 
 TileMirror::TileMirror(MirrorType type) : Tile(),
-	m_type(type)
+	m_mirrorType(type)
 {
-
+	m_type = TileType::mirror;
 }
 
 MoveInstructionsEnter TileMirror::getMoveInstructionsEnter(PathInfoForBoard pathInfo)
@@ -12,7 +12,7 @@ MoveInstructionsEnter TileMirror::getMoveInstructionsEnter(PathInfoForBoard path
 	bool canEnter = false;
 	Direction direction = Direction::up;
 
-	if (m_type == MirrorType::tl) {
+	if (m_mirrorType == MirrorType::tl) {
 		if (pathInfo.direction == Direction::right) {
 			canEnter = true;
 			direction = Direction::up;
@@ -22,7 +22,7 @@ MoveInstructionsEnter TileMirror::getMoveInstructionsEnter(PathInfoForBoard path
 			direction = Direction::left;
 		}
 	}
-	else if (m_type == MirrorType::tr) {
+	else if (m_mirrorType == MirrorType::tr) {
 		if (pathInfo.direction == Direction::left) {
 			canEnter = true;
 			direction = Direction::up;
@@ -32,7 +32,7 @@ MoveInstructionsEnter TileMirror::getMoveInstructionsEnter(PathInfoForBoard path
 			direction = Direction::right;
 		}
 	}
-	else if (m_type == MirrorType::bl) {
+	else if (m_mirrorType == MirrorType::bl) {
 		if (pathInfo.direction == Direction::right) {
 			canEnter = true;
 			direction = Direction::down;
@@ -42,7 +42,7 @@ MoveInstructionsEnter TileMirror::getMoveInstructionsEnter(PathInfoForBoard path
 			direction = Direction::left;
 		}
 	}
-	else if (m_type == MirrorType::br) {
+	else if (m_mirrorType == MirrorType::br) {
 		if (pathInfo.direction == Direction::left) {
 			canEnter = true;
 			direction = Direction::down;

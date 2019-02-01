@@ -15,7 +15,7 @@ public:
 	MoveInstructionsEnter getMoveInstructionsEnter(PathInfoForBoard pathInfo);
 	MoveInstructionsExit getMoveInstructionsExit(PathInfoForBoard pathInfo);
 
-protected:
-	MirrorType m_type;
+public:
+	MirrorType m_mirrorType;
 };
 

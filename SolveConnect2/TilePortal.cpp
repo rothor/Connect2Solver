@@ -4,7 +4,7 @@
 TilePortal::TilePortal(Point dest) : Tile(),
 	m_dest(dest)
 {
-
+	m_type = TileType::portal;
 }
 
 MoveInstructionsEnter TilePortal::getMoveInstructionsEnter(PathInfoForBoard pathInfo)

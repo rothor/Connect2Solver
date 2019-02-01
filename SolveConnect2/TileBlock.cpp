@@ -3,7 +3,7 @@
 
 TileBlock::TileBlock() : Tile()
 {
-
+	m_type = TileType::block;
 }
 
 MoveInstructionsEnter TileBlock::getMoveInstructionsEnter(PathInfoForBoard pathInfo)

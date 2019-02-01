@@ -13,7 +13,7 @@ public:
 	MoveInstructionsEnter getMoveInstructionsEnter(PathInfoForBoard pathInfo);
 	MoveInstructionsExit getMoveInstructionsExit(PathInfoForBoard pathInfo);
 
-protected:
+public:
 	int m_pathId;
 };
 
