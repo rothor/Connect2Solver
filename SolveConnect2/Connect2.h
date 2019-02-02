@@ -25,7 +25,6 @@ public:
 	int getPathDisplayId(int pathId);
 	std::string getDisplayStr();
 	std::string getIdStr();
-	std::string getIdStr2();
 	std::string getGameInputDisplayStr(GameInput gi);
 
 private:

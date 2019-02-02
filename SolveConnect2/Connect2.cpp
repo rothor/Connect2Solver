@@ -141,27 +141,28 @@ bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOcc
 
 	while (true) {
 		// Determine if we can do move
-		Point ptDest = path.getDestPoint(newDirection);
+		path.setNewDirection(newDirection);
+		Point ptDest = path.getDestPoint();
 		Point ptStart = path.getPos();
 		MoveInstructions instr = board.getMoveInstructions(ptStart, ptDest, path.getInfoForBoard());
 		if (instr.mustTeleport) {
 			ptDest = instr.teleportPoint;
 			instr = board.getMoveInstructions(ptStart, ptDest, path.getInfoForBoard());
 		}
-		if (instr.resetIfOnlyForcedMovesAfter)
-			reset = true;
 		forced = instr.isForced;
 		if (!forced)
 			reset = false;
+		if (instr.resetIfOnlyForcedMovesAfter)
+			reset = true;
 		if (path.isFull() || boardOccupy.isOccupied(ptDest) || !instr.canEnter)
 			break;
 		
 		// Set stuff pre-move
-		if (!instr.isForced)
+		if (!forced)
 			lastValidLength = path.getLength();
 
 		// Do move
-		PathMove pathMove(ptStart, ptDest, newDirection, instr.isForced, instr.mustTeleport);
+		PathMove pathMove(ptStart, ptDest, newDirection, forced, instr.mustTeleport);
 		path.doMove(pathMove);
 		boardOccupy.setOccupied(ptDest, true);
 
@@ -251,12 +252,12 @@ std::string Connect2::getDisplayStr()
 	std::string blockTileStr = "[x]";
 	std::string portalOccupiedStr = "(o)";
 	std::string portalUnnoccupiedStr = "( )";
-	std::string mirrorTileTlStr = " \/+";
-	std::string mirrorTileTrStr = "+\\ ";
-	std::string mirrorTileBlStr = " \\+";
-	std::string mirrorTileBrStr = "+\/ ";
-	std::string startTileStr = " #?";
-	std::string endTileStr = "-?-";
+	std::string mirrorTileTlStr = " \/)";
+	std::string mirrorTileTrStr = "(\\ ";
+	std::string mirrorTileBlStr = " \\)";
+	std::string mirrorTileBrStr = "(\/ ";
+	std::string startTileStr = "#?#";
+	std::string endTileUnnoccupiedStr = "-?-";
 	std::string endTileOccupiedStr = "{?}";
 	std::string dirUp = " A ";
 	std::string dirDown = " V ";
@@ -364,7 +365,7 @@ std::string Connect2::getDisplayStr()
 				if (m_boardOccupy.isOccupied(Point(x, y)))
 					board[x][y] = endTileOccupiedStr;
 				else
-					board[x][y] = endTileStr;
+					board[x][y] = endTileUnnoccupiedStr;
 				int pos = board[x][y].find("?");
 				board[x][y].replace(pos, 1, std::to_string(start->m_pathId));
 			}
@@ -407,42 +408,19 @@ std::string Connect2::getDisplayStr()
 	}
 	ret += "\n";
 
-	return ret;
-}
-
-// This is the old version.
-std::string Connect2::getIdStr()
-{
-	return getIdStr2();
-
-	std::vector<std::vector<std::string>> board;
-	board.resize(m_width);
-	for (int i = 0; i < m_width; i++) {
-		board[i].resize(m_height, "-");
-	}
-
+	// Loop through each path
 	for (int i = 0; i < m_path.size(); i++) {
-		Point pt = m_path[i].getStartPoint();
-		board[pt.x][pt.y] = std::to_string(getPathDisplayId(i));
-		for (int j = 0; j < m_path[i].getLength(); j++) {
-			PathMove move = m_path[i].getMove(j);
-			board[move.ptDest.x][move.ptDest.y] = std::to_string(i);
-		}
-	}
-
-	std::string ret;
-	for (int y = m_height - 1; y >= 0; y--) {
-		for (int x = 0; x < m_width; x++) {
-			ret += board[x][y];
-		}
+		ret += std::to_string(m_path[i].getId()) + " = " +
+			std::to_string(m_path[i].getLength()) + "\/" +
+			std::to_string(m_path[i].getMaxLength());
+		if (i < m_path.size() - 1)
+			ret += " , ";
 	}
 
 	return ret;
 }
 
-// In general, this will give much shorter names than getMoveArrStr(), which is why
-// this is preferred.
-std::string Connect2::getIdStr2()
+std::string Connect2::getIdStr()
 {
 	std::string ret;
 	ret += m_path[0].getMoveArrStr();

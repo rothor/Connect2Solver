@@ -14,18 +14,19 @@ public:
 	bool isFull();
 	Point getPos();
 	bool havePreviousMoves();
-	void doMove(PathMove move);
 	PathMove getLastMove();
-	void undoLastMove();
-	void setDirection(Direction pdirNew);
-	Point getDestPoint(Direction direction);
+	void setNewDirection(Direction newDirection);
+	Point getDestPoint();
 	Point getStartPoint();
 	PathInfoForBoard getInfoForBoard();
 	int getLength();
+	int getMaxLength();
 	Direction getDirection();
 	PathMove getMove(int index);
 	int getId();
 	std::string getMoveArrStr();
+	void doMove(PathMove move);
+	void undoLastMove();
 	void reset();
 
 protected:
@@ -36,5 +37,6 @@ protected:
 	Point m_start;
 	Point m_pos;
 	Direction m_direction;
+	Direction m_newDirection;
 	bool m_teleportedLastMove;
 };
