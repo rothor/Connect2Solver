@@ -22,7 +22,7 @@ std::string RecursionHelper::outputStr()
 	}
 
 	retStr += "Solution (" + std::to_string(solution.miArr.size()) + " moves):";
-	retStr += game.getGameInputDisplayStr(solution);
+	retStr += solution.getDisplayStr();
 
 	return retStr;
 }

@@ -74,25 +74,10 @@ bool Connect2::matches(Connect2& board)
 	return true;
 }
 
-bool Connect2::moveUserInput(MoveInput mi)
-{
-	// First, mi.pathId is converted from the display id to the actual id.
-	mi.pathId = getPathIdFromDisplayId(mi.pathId);
-
-	int length = m_path[mi.pathId].getLength();
-	bool moveValid = staticMove(mi, m_path[mi.pathId], m_board, m_boardOccupy);
-	if (moveValid) {
-		m_lastPathMoved = mi.pathId;
-		m_lastPathMovedLength = length;
-	}
-
-	return moveValid;
-}
-
 bool Connect2::move(MoveInput mi)
 {
-	int length = m_path[mi.pathId].getLength();
-	bool moveValid = staticMove(mi, m_path[mi.pathId], m_board, m_boardOccupy);
+	int length = getPath(mi.pathId).getLength();
+	bool moveValid = staticMove(mi, getPath(mi.pathId), m_board, m_boardOccupy);
 	if (moveValid) {
 		m_lastPathMoved = mi.pathId;
 		m_lastPathMovedLength = length;
@@ -107,10 +92,10 @@ bool Connect2::move(MoveInput mi)
  */
 void Connect2::undo()
 {
-	while (m_path[m_lastPathMoved].getLength() > m_lastPathMovedLength) {
-		PathMove pathMove = m_path[m_lastPathMoved].getLastMove();
+	while (getPath(m_lastPathMoved).getLength() > m_lastPathMovedLength) {
+		PathMove pathMove = getPath(m_lastPathMoved).getLastMove();
 		m_boardOccupy.setOccupied(pathMove.ptDest, false);
-		m_path[m_lastPathMoved].undoLastMove();
+		getPath(m_lastPathMoved).undoLastMove();
 	}
 }
 
@@ -149,11 +134,11 @@ bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOcc
 			ptDest = instr.teleportPoint;
 			instr = board.getMoveInstructions(ptStart, ptDest, path.getInfoForBoard());
 		}
+		if (instr.resetIfOnlyForcedMovesAfter)
+			reset = true;
 		forced = instr.isForced;
 		if (!forced)
 			reset = false;
-		if (instr.resetIfOnlyForcedMovesAfter)
-			reset = true;
 		if (path.isFull() || boardOccupy.isOccupied(ptDest) || !instr.canEnter)
 			break;
 		
@@ -443,15 +428,7 @@ int Connect2::getPathIdFromDisplayId(int pathDisplayId)
 	return 0;
 }
 
-std::string Connect2::getGameInputDisplayStr(GameInput gi)
+Path& Connect2::getPath(int pathDisplayId)
 {
-	std::string retStr;
-	int prevPathId = -1;
-	for (const MoveInput& mi : gi.miArr) {
-		if (mi.pathId != prevPathId)
-			retStr += "\n" + std::to_string(getPathDisplayId(mi.pathId)) + ": ";
-		prevPathId = mi.pathId;
-		retStr += directionToChar(mi.direction) + 'A' - 'a'; // to upper
-	}
-	return retStr;
+	return m_path[getPathIdFromDisplayId(pathDisplayId)];
 }

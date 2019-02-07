@@ -3,10 +3,12 @@
 
 MoveInstructionsExit::MoveInstructionsExit(bool isForced,
 	bool mustTeleport,
-	Point teleportPoint) :
+	Point teleportPoint,
+	bool resetIfOnlyForcedMovesAfter) :
 	isForced(isForced),
 	mustTeleport(mustTeleport),
-	teleportPoint(teleportPoint)
+	teleportPoint(teleportPoint),
+	resetIfOnlyForcedMovesAfter(resetIfOnlyForcedMovesAfter)
 {
 
 }

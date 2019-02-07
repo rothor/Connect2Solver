@@ -84,6 +84,12 @@
     <ClCompile Include="IdManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sqlite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SolutionInputManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TileNeutral.h">
@@ -152,5 +158,17 @@
     <ClInclude Include="IdManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sqlite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SolutionInputManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sqlite3.def">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="sqlite3.dll" />
   </ItemGroup>
 </Project>

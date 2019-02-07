@@ -10,10 +10,10 @@ TileEnd::TileEnd(int pathId) : Tile(),
 MoveInstructionsEnter TileEnd::getMoveInstructionsEnter(PathInfoForBoard pathInfo)
 {
 	bool canEnter = pathInfo.id == m_pathId && pathInfo.length == pathInfo.maxLength - 1;
-	return MoveInstructionsEnter(canEnter, false, Direction::up, false);
+	return MoveInstructionsEnter(canEnter, false, Direction::up);
 }
 
 MoveInstructionsExit TileEnd::getMoveInstructionsExit(PathInfoForBoard pathInfo)
 {
-	return MoveInstructionsExit(false, false, Point(0, 0));
+	return MoveInstructionsExit(false, false, Point(0, 0), false);
 }

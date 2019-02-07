@@ -7,12 +7,10 @@ class MoveInstructionsEnter
 public:
 	MoveInstructionsEnter(bool canEnter = false,
 		bool changeDirectionAfterMove = false,
-		Direction newDirection = Direction::up,
-		bool resetIfOnlyForcedMovesAfter = false);
+		Direction newDirection = Direction::up);
 	
 public:
 	bool changeDirectionAfterMove;
 	Direction newDirection;
 	bool canEnter;
-	bool resetIfOnlyForcedMovesAfter;
 };

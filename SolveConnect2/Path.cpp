@@ -100,7 +100,9 @@ std::string Path::getMoveArrStr()
 	int count = 1;
 	for (int i = 1; i < m_move.size(); i++) {
 		if (m_move[i].direction != dir) {
-			ret += directionToChar(dir) + std::to_string(count);
+			ret += directionToChar(dir);
+			if (count > 1)
+				ret += std::to_string(count);
 			dir = m_move[i].direction;
 			count = 1;
 		}

@@ -17,7 +17,6 @@ public:
 	bool isSolved();
 	int getNumOfPaths();
 	bool matches(Connect2& board);
-	bool moveUserInput(MoveInput mi);
 	bool move(MoveInput mi);
 	void undo();
 	void reset();
@@ -25,10 +24,10 @@ public:
 	int getPathDisplayId(int pathId);
 	std::string getDisplayStr();
 	std::string getIdStr();
-	std::string getGameInputDisplayStr(GameInput gi);
 
 private:
 	int getPathIdFromDisplayId(int pathDisplayId);
+	Path& getPath(int pathDisplayId);
 
 protected:
 	Board m_board;

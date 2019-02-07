@@ -2,8 +2,8 @@
 
 
 IdManager::IdManager() :
-	m_numOfIdMaps(1000000),
-	m_doIdCounting(true) // set this to false to avoid id counting
+	m_numOfIdMaps(10000), //1000000
+	m_doIdCounting(false) // set this to false to avoid id counting
 {
 	for (int i = 0; i < m_numOfIdMaps; i++) {
 		m_idMapArr.push_back(

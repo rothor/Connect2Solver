@@ -9,10 +9,10 @@ TilePortal::TilePortal(Point dest) : Tile(),
 
 MoveInstructionsEnter TilePortal::getMoveInstructionsEnter(PathInfoForBoard pathInfo)
 {
-	return MoveInstructionsEnter(true, false, Direction::up, true);
+	return MoveInstructionsEnter(true, false, Direction::up);
 }
 
 MoveInstructionsExit TilePortal::getMoveInstructionsExit(PathInfoForBoard pathInfo)
 {
-	return MoveInstructionsExit(true, !pathInfo.prevMoveWasTeleport, m_dest);
+	return MoveInstructionsExit(true, !pathInfo.prevMoveWasTeleport, m_dest, true);
 }

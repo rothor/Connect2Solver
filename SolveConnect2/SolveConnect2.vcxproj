@@ -166,6 +166,8 @@
     <ClCompile Include="PathMove.cpp" />
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="RecursionHelper.cpp" />
+    <ClCompile Include="SolutionInputManager.cpp" />
+    <ClCompile Include="Sqlite.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileBlock.cpp" />
     <ClCompile Include="TileEnd.cpp" />
@@ -191,6 +193,8 @@
     <ClInclude Include="PathMove.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="RecursionHelper.h" />
+    <ClInclude Include="SolutionInputManager.h" />
+    <ClInclude Include="Sqlite.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="TileBlock.h" />
     <ClInclude Include="TileEnd.h" />
@@ -198,6 +202,10 @@
     <ClInclude Include="TileNeutral.h" />
     <ClInclude Include="TilePortal.h" />
     <ClInclude Include="TileStart.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sqlite3.def" />
+    <None Include="sqlite3.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
