@@ -160,6 +160,7 @@
     <ClCompile Include="GameInputRecursionNodeInfo.cpp" />
     <ClCompile Include="GameSolver.cpp" />
     <ClCompile Include="IdManager.cpp" />
+    <ClCompile Include="IdManagerSqlite.cpp" />
     <ClCompile Include="MoveInput.cpp" />
     <ClCompile Include="MoveInstructionsEnter.cpp" />
     <ClCompile Include="MoveInstructionsExit.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="GameInputRecursionNodeInfo.h" />
     <ClInclude Include="GameSolver.h" />
     <ClInclude Include="IdManager.h" />
+    <ClInclude Include="IdManagerSqlite.h" />
     <ClInclude Include="MoveInput.h" />
     <ClInclude Include="MoveInstructionsEnter.h" />
     <ClInclude Include="MoveInstructionsExit.h" />
@@ -210,7 +212,6 @@
     <ClInclude Include="TileStart.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="sqlite3.def" />
     <None Include="sqlite3.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

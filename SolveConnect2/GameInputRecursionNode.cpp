@@ -40,8 +40,8 @@ bool GameInputRecursionNode::recurse(GameInputRecursionNodeInfo& gii)
 
 void GameInputRecursionNode::addValidMoves(GameInputRecursionNodeInfo& gii)
 {
-	gii.game.reset();
-	gii.game.moveAll(gii.gi);
+	//gii.game.reset();
+	//gii.game.moveAll(gii.gi);
 
 	int numOfPaths = gii.game.getNumOfPaths();
 	std::list<Direction> directions{ Direction::down, Direction::up, Direction::left, Direction::right };

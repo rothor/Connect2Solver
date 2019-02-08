@@ -96,6 +96,7 @@ void Connect2::moveAll(GameInput gi)
 /* Undoes the last move. Only keeps track of the last move,
  * so this shouldn't be called more than once between each
  * move.
+ * Also, this currently does not work and should not be used.
  */
 void Connect2::undo()
 {
@@ -225,7 +226,6 @@ void Connect2::reset()
 		}
 	}
 }
-
 
 int Connect2::getPathDisplayId(int pathId)
 {

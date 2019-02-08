@@ -99,6 +99,9 @@
     <ClCompile Include="GameInputRecursionNodeInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IdManagerSqlite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TileNeutral.h">
@@ -182,11 +185,11 @@
     <ClInclude Include="GameInputRecursionNodeInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IdManagerSqlite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="sqlite3.def">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="sqlite3.dll" />
   </ItemGroup>
 </Project>

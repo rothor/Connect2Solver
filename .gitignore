@@ -4,6 +4,7 @@
 # my added
 *.txt
 *.db
+*.db-journal
 
 # User-specific files
 *.suo

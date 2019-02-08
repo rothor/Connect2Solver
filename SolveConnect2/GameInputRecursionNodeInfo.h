@@ -2,7 +2,8 @@
 #include <string>
 #include "GameInput.h"
 #include "Connect2.h"
-#include "IdManager.h"
+//#include "IdManager.h"
+#include "IdManagerSqlite.h"
 
 
 class GameInputRecursionNodeInfo
@@ -21,5 +22,5 @@ public:
 	GameInput solution;
 	int depth;
 	int numBranches;
-	IdManager idManager;
+	IdManagerSqlite idManager;
 };

@@ -40,6 +40,4 @@ protected:
 
 	int m_lastPathMoved;
 	int m_lastPathMovedLength;
-	bool m_lastPathMovedWasUndo;
-
 };

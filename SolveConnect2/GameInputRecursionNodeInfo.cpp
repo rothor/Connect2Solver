@@ -10,7 +10,9 @@ GameInputRecursionNodeInfo::GameInputRecursionNodeInfo(Connect2 game) :
 	numBranches(0)
 {
 	game.reset();
+	idManager.beginQuerying();
 	idManager.addIdIsUnique(game.getIdStr());
+	idManager.endQuerying();
 }
 
 void GameInputRecursionNodeInfo::clearUnnecessaryData()
