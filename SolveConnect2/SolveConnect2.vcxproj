@@ -156,6 +156,9 @@
     <ClCompile Include="Connect2.cpp" />
     <ClCompile Include="Direction.cpp" />
     <ClCompile Include="GameInput.cpp" />
+    <ClCompile Include="GameInputRecursionNode.cpp" />
+    <ClCompile Include="GameInputRecursionNodeInfo.cpp" />
+    <ClCompile Include="GameSolver.cpp" />
     <ClCompile Include="IdManager.cpp" />
     <ClCompile Include="MoveInput.cpp" />
     <ClCompile Include="MoveInstructionsEnter.cpp" />
@@ -183,6 +186,9 @@
     <ClInclude Include="Connect2.h" />
     <ClInclude Include="Direction.h" />
     <ClInclude Include="GameInput.h" />
+    <ClInclude Include="GameInputRecursionNode.h" />
+    <ClInclude Include="GameInputRecursionNodeInfo.h" />
+    <ClInclude Include="GameSolver.h" />
     <ClInclude Include="IdManager.h" />
     <ClInclude Include="MoveInput.h" />
     <ClInclude Include="MoveInstructionsEnter.h" />

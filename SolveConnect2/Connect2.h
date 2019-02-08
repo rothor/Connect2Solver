@@ -18,6 +18,7 @@ public:
 	int getNumOfPaths();
 	bool matches(Connect2& board);
 	bool move(MoveInput mi);
+	void moveAll(GameInput gi);
 	void undo();
 	void reset();
 
@@ -36,6 +37,9 @@ protected:
 	std::vector<Point> m_endPointArr;
 	int m_width;
 	int m_height;
+
 	int m_lastPathMoved;
 	int m_lastPathMovedLength;
+	bool m_lastPathMovedWasUndo;
+
 };

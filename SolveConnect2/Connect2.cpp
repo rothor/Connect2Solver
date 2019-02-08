@@ -86,16 +86,24 @@ bool Connect2::move(MoveInput mi)
 	return moveValid;
 }
 
+void Connect2::moveAll(GameInput gi)
+{
+	for (MoveInput& mi : gi.miArr) {
+		move(mi);
+	}
+}
+
 /* Undoes the last move. Only keeps track of the last move,
  * so this shouldn't be called more than once between each
  * move.
  */
 void Connect2::undo()
 {
-	while (getPath(m_lastPathMoved).getLength() > m_lastPathMovedLength) {
-		PathMove pathMove = getPath(m_lastPathMoved).getLastMove();
+	Path& path = getPath(m_lastPathMoved);
+	while (path.getLength() > m_lastPathMovedLength) {
+		PathMove pathMove = path.getLastMove();
 		m_boardOccupy.setOccupied(pathMove.ptDest, false);
-		getPath(m_lastPathMoved).undoLastMove();
+		path.undoLastMove();
 	}
 }
 

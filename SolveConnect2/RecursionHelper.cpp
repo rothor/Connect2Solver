@@ -21,7 +21,7 @@ std::string RecursionHelper::outputStr()
 		return retStr;
 	}
 
-	retStr += "Solution (" + std::to_string(solution.miArr.size()) + " moves):";
+	retStr += "Solution (" + std::to_string(solution.miArr.size()) + " moves):\n";
 	retStr += solution.getDisplayStr();
 
 	return retStr;

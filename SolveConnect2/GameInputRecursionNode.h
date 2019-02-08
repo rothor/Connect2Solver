@@ -1,15 +1,21 @@
 #pragma once
 #include <list>
 #include <memory>
+#include "GameInputRecursionNodeInfo.h"
 
 
 class GameInputRecursionNode
 {
 public:
-	GameInputRecursionNode();
+	GameInputRecursionNode(MoveInput move, bool isFirst = true);
 
-	int addMoves(GameInput& gi);
+	bool recurse(GameInputRecursionNodeInfo& gii);
+
+protected:
+	void addValidMoves(GameInputRecursionNodeInfo& gii);
 	
-public:
+protected:
 	std::list<std::unique_ptr<GameInputRecursionNode>> moveArr;
+	MoveInput move;
+	bool isFirst;
 };
