@@ -10,14 +10,12 @@ public:
 	GameInputRecursionManager();
 	~GameInputRecursionManager();
 
-	bool recurse(GameInputRecursionNodeInfo& gii, MoveInputRow mir = MoveInputRow());
+	void recurse(GameInputRecursionNodeInfo& gii);
 	void beginQuerying();
 	void endQuerying();
 
 protected:
-	void addValidMoves(GameInputRecursionNodeInfo& gii, MoveInputRow& mir, std::list<MoveInputRow>& mirArr);
+	void addValidMoves(GameInputRecursionNodeInfo& gii, GameInput& gi);
 	Sqlite sql;
-	sqlite3_stmt* m_stmtSelect;
 	sqlite3_stmt* m_stmtInsert;
-	sqlite3_stmt* m_stmtDelete;
 };

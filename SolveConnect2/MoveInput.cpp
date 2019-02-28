@@ -25,5 +25,5 @@ MoveInput::MoveInput() :
 
 std::string MoveInput::getSaveStr()
 {
-	return std::string("" + std::to_string(pathId) + directionToChar(direction));
+	return std::string(std::to_string(pathId) + directionToChar(direction));
 }

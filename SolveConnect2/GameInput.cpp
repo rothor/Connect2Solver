@@ -59,8 +59,9 @@ std::string GameInput::getSaveString()
 	std::string ret;
 	for (auto iter = miArr.begin(); iter != miArr.end(); iter++) {
 		ret += (*iter).getSaveStr();
-		if (++iter-- != miArr.end())
+		if (++iter != miArr.end())
 			ret += " ";
+		iter--;
 	}
 	return ret;
 }
