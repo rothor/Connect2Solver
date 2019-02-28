@@ -1,7 +1,6 @@
 #pragma once
 #include <map>
 #include <string>
-#include "IdManager.h"
 #include "GameInput.h"
 #include "MoveInput.h"
 #include "Connect2.h"

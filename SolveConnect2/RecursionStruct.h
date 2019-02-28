@@ -2,15 +2,14 @@
 #include <string>
 #include "GameInput.h"
 #include "Connect2.h"
-//#include "IdManager.h"
-#include "IdManagerSqlite.h"
+#include "IdManager.h"
+#include "GameInputManager.h"
 
 
-class GameInputRecursionNodeInfo
+class RecursionStruct
 {
 public:
-	GameInputRecursionNodeInfo(Connect2 game);
-	void clearUnnecessaryData();
+	RecursionStruct(Connect2 game);
 	std::string getDisplayStr();
 	
 public:
@@ -22,5 +21,6 @@ public:
 	GameInput solution;
 	int depth;
 	int numBranches;
-	IdManagerSqlite idManager;
+	IdManager* idManager;
+	GameInputManager* gim;
 };

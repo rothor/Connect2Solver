@@ -1,7 +1,7 @@
-#include "GameInputRecursionNodeInfo.h"
+#include "RecursionStruct.h"
 
 
-GameInputRecursionNodeInfo::GameInputRecursionNodeInfo(Connect2 game) :
+RecursionStruct::RecursionStruct(Connect2 game) :
 	game(game),
 	movesEvaluated(0),
 	movesEvaluatedValid(0),
@@ -10,17 +10,14 @@ GameInputRecursionNodeInfo::GameInputRecursionNodeInfo(Connect2 game) :
 	numBranches(0)
 {
 	game.reset();
-	idManager.beginQuerying();
-	idManager.addIdIsUnique(game.getIdStr());
-	idManager.endQuerying();
+	gim = new GameInputManager;
+	idManager = new IdManager;
+	idManager->beginQuerying();
+	idManager->addIdIsUnique(game.getIdStr());
+	idManager->endQuerying();
 }
 
-void GameInputRecursionNodeInfo::clearUnnecessaryData()
-{
-	idManager.clear();
-}
-
-std::string GameInputRecursionNodeInfo::getDisplayStr()
+std::string RecursionStruct::getDisplayStr()
 {
 	std::string ret;
 	if (solutionFound) {

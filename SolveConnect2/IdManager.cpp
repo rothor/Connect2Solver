@@ -1,93 +1,68 @@
 #include "IdManager.h"
+#include <Windows.h>
+
+#include "Timer.h"
+#include "HighResolutionTimer.h"
 
 
-IdManager::IdManager() :
-	m_numOfIdMaps(10000), //1000000
-	m_doIdCounting(false) // set this to false to avoid id counting
+void deleteFile2(const wchar_t* file)
 {
-	for (int i = 0; i < m_numOfIdMaps; i++) {
-		m_idMapArr.push_back(
-			std::unique_ptr<std::map<std::string, bool>>(
-				new std::map<std::string, bool>()
-			)
-		);
-	}
-
-	if (m_doIdCounting) {
-		for (int i = 0; i < m_numOfIdMaps; i++) {
-			m_idCountMapArr.push_back(
-				std::unique_ptr<std::map<std::string, int>>(
-					new std::map<std::string, int>()
-					)
-			);
-		}
+	DeleteFile(file);
+	DWORD attrib = GetFileAttributes(file);
+	while (attrib != INVALID_FILE_ATTRIBUTES) {
+		attrib = GetFileAttributes(file);
+		Sleep(1);
 	}
 }
 
-unsigned int DJBHash(const char* str, unsigned int length)
+IdManager::IdManager() :
+	m_tableCount(1000)
 {
-	unsigned int hash = 5381;
-	unsigned int i = 0;
-	for (i = 0; i < length; ++str, ++i) {
-		hash = ((hash << 5) + hash) + (*str);
-	}
+	DeleteFile(L"hash.sqlite"); // Make sure database starts out fresh
+	m_sql.openDb("hash.sqlite");
+	m_sql.execute("PRAGMA synchronous = OFF;"); // faster
+	m_sql.execute("PRAGMA JOURNAL_MODE = OFF;"); // faster
+	m_sql.execute("CREATE TABLE HashTable(Hash TEXT UNIQUE);");
+}
 
-	return hash;
+IdManager::~IdManager()
+{
+	
 }
 
 bool IdManager::addIdIsUnique(std::string gameId)
 {
-	unsigned int hashValue = DJBHash(&gameId[0], gameId.length());
-	hashValue %= m_numOfIdMaps;
-	auto ret = m_idMapArr[hashValue]->insert(std::pair<std::string, int>(gameId, false));
+	HighResolutionTimer timer; // #####
+	timer.reset(); // #####
+	int rc = sqlite3_bind_text(m_sql.m_stmt, 1, gameId.c_str(), gameId.size(), 0);
+	int result = sqlite3_step(m_sql.m_stmt);
+	rc = sqlite3_clear_bindings(m_sql.m_stmt);
+	rc = sqlite3_reset(m_sql.m_stmt);
+	Timer::addTime(std::string("Hash"), timer.readMicro()); // #####
 
-	if (m_doIdCounting) {
-		addIdCount(gameId, hashValue);
-	}
-
-	return ret.second;
+	if (result == SQLITE_DONE) // If it successfully inserted
+		return true;
+	else if (result == SQLITE_CONSTRAINT) // If query fails the 'unique' constraint, and thus is not unique
+		return false;
+	else // This should also probably have better error checking.
+		return false;
 }
 
-void IdManager::addIdCount(std::string gameId, unsigned int hash)
+void IdManager::beginQuerying()
 {
-	auto ret = m_idCountMapArr[hash]->insert(std::pair<std::string, int>(gameId, 1));
-	if (!ret.second)
-		ret.first->second++;
+	m_sql.execute("BEGIN TRANSACTION;");
+	std::string stmt = "insert into HashTable (Hash) values (?);";
+	int rc = sqlite3_prepare_v2(m_sql.m_sql, stmt.c_str(), stmt.size(), &m_sql.m_stmt, 0);
+}
+
+void IdManager::endQuerying()
+{
+	int rc = sqlite3_finalize(m_sql.m_stmt);
+	//
+	m_sql.execute("END TRANSACTION;");
 }
 
 void IdManager::clear()
 {
-	m_idMapArr.clear();
-}
-
-std::string IdManager::getIdCountStr()
-{
-	std::map<int, int> countMap;
-	for (int i = 0; i < m_numOfIdMaps; i++) {
-		for (auto pair : *m_idCountMapArr[i]) {
-			auto iter = countMap.find(pair.second);
-			if (iter == countMap.end())
-				countMap.insert(std::pair<int, int>(pair.second, 1));
-			else
-				iter->second++;
-		}
-	}
-
-	int total = 0;
-	for (auto pair : countMap) {
-		total += pair.second;
-	}
-	std::map<int, double> countPercentMap;
-	for (auto pair : countMap) {
-		countPercentMap.insert(std::pair<int, double>(pair.first, (double)pair.second / total));
-	}
-	
-	std::string ret;
-	double totalPercent = 0;
-	for (auto pair : countPercentMap) {
-		ret += std::to_string(pair.first) + "\t" + std::to_string(pair.second) + "\n";
-		totalPercent += pair.second;
-	}
-	ret += "Total: " + std::to_string(totalPercent);
-	return ret;
+	m_sql.execute("DELETE FROM HashTable;");
 }

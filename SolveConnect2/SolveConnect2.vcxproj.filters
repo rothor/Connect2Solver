@@ -78,25 +78,10 @@
     <ClCompile Include="GameInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IdManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Sqlite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SolutionInputManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameInputRecursionNode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameInputRecursionNodeInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IdManagerSqlite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameInputRecursionManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MoveInputRow.cpp">
@@ -106,6 +91,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HighResolutionTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameInputManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Connect2Solver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RecursionStruct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IdManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -170,25 +167,10 @@
     <ClInclude Include="GameInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IdManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Sqlite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SolutionInputManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameInputRecursionNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameInputRecursionNodeInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IdManagerSqlite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameInputRecursionManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MoveInputRow.h">
@@ -198,6 +180,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HighResolutionTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameInputManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Connect2Solver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RecursionStruct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IdManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

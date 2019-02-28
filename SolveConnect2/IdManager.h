@@ -1,26 +1,22 @@
 #pragma once
-#include <map>
-#include <vector>
-#include <memory>
+#include "Sqlite.h"
 #include <string>
+#include <vector>
 
 
 class IdManager
 {
 public:
 	IdManager();
+	~IdManager();
+
 	bool addIdIsUnique(std::string gameId);
+	void beginQuerying();
+	void endQuerying();
 	void clear();
-	// for id counting
-	std::string getIdCountStr();
 
 protected:
-	void addIdCount(std::string gameId, unsigned int hash);
-	
-protected:
-	std::vector<std::unique_ptr<std::map<std::string, bool>>> m_idMapArr;
-	const int m_numOfIdMaps;
-	// for id counting
-	bool m_doIdCounting;
-	std::vector<std::unique_ptr<std::map<std::string, int>>> m_idCountMapArr;
+	Sqlite m_sql;
+	std::vector<sqlite3_stmt*> m_stmtArr;
+	int m_tableCount;
 };
