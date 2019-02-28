@@ -40,4 +40,6 @@ protected:
 
 	int m_lastPathMoved;
 	int m_lastPathMovedLength;
+	bool m_lastMoveWasUndo;
+	std::vector<Direction> m_lastMoveDir;
 };

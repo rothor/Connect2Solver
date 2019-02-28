@@ -22,6 +22,7 @@ public:
 	int getLength();
 	int getMaxLength();
 	Direction getDirection();
+	Direction getLastMoveDirection();
 	PathMove getMove(int index);
 	int getId();
 	std::string getMoveArrStr();
@@ -38,5 +39,6 @@ protected:
 	Point m_pos;
 	Direction m_direction;
 	Direction m_newDirection;
+	Direction m_lastMoveDirection;
 	bool m_teleportedLastMove;
 };

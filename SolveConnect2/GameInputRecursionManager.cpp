@@ -71,21 +71,30 @@ void GameInputRecursionManager::recurse(GameInputRecursionNodeInfo& gii)
 	}
 }
 
+#include <iostream>
 void GameInputRecursionManager::addValidMoves(GameInputRecursionNodeInfo& gii, GameInput& gi)
 {
+	HighResolutionTimer timer; // #####
+	timer.reset(); // #####
+	//gii.game.reset();
+	//gii.game.moveAll(gi);
+	//Timer::addTime(std::string("MoveAll"), timer.readMicro()); // #####
+
 	int numOfPaths = gii.game.getNumOfPaths();
 	std::list<Direction> directions{ Direction::down, Direction::up, Direction::left, Direction::right };
 	for (int i = 0; i < numOfPaths; i++) {
 		for (Direction direction : directions) {
 			MoveInput newMi = MoveInput(gii.game.getPathDisplayId(i), direction);
 
-			HighResolutionTimer timer; // #####
 			timer.reset(); // #####
 			gii.game.reset();
 			gii.game.moveAll(gi);
 			Timer::addTime(std::string("MoveAll"), timer.readMicro()); // #####
 
+			timer.reset(); // #####
 			bool moveIsValid = gii.game.move(newMi);
+			Timer::addTime(std::string("MoveAll"), timer.readMicro()); // #####
+
 			gii.movesEvaluated++; // for display
 			if (moveIsValid) {
 				gii.movesEvaluatedValid++; // for display
@@ -93,7 +102,9 @@ void GameInputRecursionManager::addValidMoves(GameInputRecursionNodeInfo& gii, G
 				std::string id = gii.game.getIdStr();
 				bool isUnique = gii.idManager.addIdIsUnique(id);
 				if (!isUnique) { // If game id already exists
+					timer.reset(); // #####
 					//gii.game.undo();
+					//Timer::addTime(std::string("MoveAll"), timer.readMicro()); // #####
 					continue;
 				}
 
@@ -117,7 +128,9 @@ void GameInputRecursionManager::addValidMoves(GameInputRecursionNodeInfo& gii, G
 				Timer::addTime(std::string("Insert"), timer.readMicro()); // #####
 				// --end sql
 				gii.numBranches++;
+				timer.reset(); // #####
 				//gii.game.undo(); // Only undo if the move was valid.
+				//Timer::addTime(std::string("MoveAll"), timer.readMicro()); // #####
 			}
 		}
 	}

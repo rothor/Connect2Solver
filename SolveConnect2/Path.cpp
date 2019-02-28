@@ -81,6 +81,11 @@ Direction Path::getDirection()
 	return m_direction;
 }
 
+Direction Path::getLastMoveDirection()
+{
+	return m_lastMoveDirection;
+}
+
 PathMove Path::getMove(int index)
 {
 	return m_move[index];
@@ -123,6 +128,7 @@ void Path::doMove(PathMove move)
 
 void Path::undoLastMove()
 {
+	m_lastMoveDirection = m_move.back().direction;
 	m_pos = m_move.back().ptBegin;
 	m_move.pop_back();
 	m_length--;

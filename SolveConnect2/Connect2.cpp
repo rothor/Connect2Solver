@@ -3,7 +3,7 @@
 #include "Direction.h"
 #include <iostream>
 
-bool staticMove(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy);
+bool staticMove(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy, bool& moveWasUndo);
 bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy);
 bool staticMoveUndo(Path& path, Board& board, BoardOccupy& boardOccupy);
 
@@ -76,8 +76,9 @@ bool Connect2::matches(Connect2& board)
 
 bool Connect2::move(MoveInput mi)
 {
-	int length = getPath(mi.pathId).getLength();
-	bool moveValid = staticMove(mi, getPath(mi.pathId), m_board, m_boardOccupy);
+	Path& path = getPath(mi.pathId);
+	int length = path.getLength();
+	bool moveValid = staticMove(mi, path, m_board, m_boardOccupy, m_lastMoveWasUndo);
 	if (moveValid) {
 		m_lastPathMoved = mi.pathId;
 		m_lastPathMovedLength = length;
@@ -93,6 +94,7 @@ void Connect2::moveAll(GameInput gi)
 	}
 }
 
+void staticMoveDoForUndo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy, int length);
 /* Undoes the last move. Only keeps track of the last move,
  * so this shouldn't be called more than once between each
  * move.
@@ -101,28 +103,81 @@ void Connect2::moveAll(GameInput gi)
 void Connect2::undo()
 {
 	Path& path = getPath(m_lastPathMoved);
+	if (m_lastMoveWasUndo) {
+		MoveInput mi(path.getId(), path.getLastMoveDirection());
+		staticMoveDoForUndo(mi, path, m_board, m_boardOccupy, m_lastPathMovedLength);
+	}
+	
 	while (path.getLength() > m_lastPathMovedLength) {
 		PathMove pathMove = path.getLastMove();
 		m_boardOccupy.setOccupied(pathMove.ptDest, false);
 		path.undoLastMove();
 	}
 }
+void staticMoveDoForUndo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy, int length)
+{
+	Direction newDirection = mi.direction;
+	bool reset = false;
+	bool forced = false;
+	int startLength = path.getLength();
+	int lastValidLength = startLength;
 
-bool staticMove(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy)
+	while (true) {
+		// Determine if we can do move
+		if (path.getLength() == length)
+			break;
+
+		path.setNewDirection(newDirection);
+		Point ptDest = path.getDestPoint();
+		Point ptStart = path.getPos();
+		MoveInstructions instr = board.getMoveInstructions(ptStart, ptDest, path.getInfoForBoard());
+		if (instr.mustTeleport) {
+			ptDest = instr.teleportPoint;
+			instr = board.getMoveInstructions(ptStart, ptDest, path.getInfoForBoard());
+		}
+		if (instr.resetIfOnlyForcedMovesAfter)
+			reset = true;
+		forced = instr.isForced;
+		if (!forced)
+			reset = false;
+		if (path.isFull() || boardOccupy.isOccupied(ptDest) || !instr.canEnter)
+			break;
+
+		// Set stuff pre-move
+		if (!forced)
+			lastValidLength = path.getLength();
+
+		// Do move
+		PathMove pathMove(ptStart, ptDest, newDirection, forced, instr.mustTeleport);
+		path.doMove(pathMove);
+		boardOccupy.setOccupied(ptDest, true);
+
+		// Set stuff
+		if (instr.changeDirectionAfterMove)
+			newDirection = instr.newDirection;
+	}
+}
+
+bool staticMove(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy, bool& moveWasUndo)
 {
 	Point pt = path.getPos();
-	if (!path.havePreviousMoves())
+	if (!path.havePreviousMoves()) {
+		moveWasUndo = false;
 		return staticMoveDo(mi, path, board, boardOccupy);
+	}
 
 	PathMove move = path.getLastMove();
 	if ((move.direction == Direction::left && mi.direction == Direction::right) ||
 		(move.direction == Direction::right && mi.direction == Direction::left) ||
 		(move.direction == Direction::down && mi.direction == Direction::up) ||
 		(move.direction == Direction::up && mi.direction == Direction::down)) {
+		moveWasUndo = true;
 		return staticMoveUndo(path, board, boardOccupy);
 	}
-	else
+	else {
+		moveWasUndo = false;
 		return staticMoveDo(mi, path, board, boardOccupy);
+	}
 }
 
 bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy)
@@ -210,6 +265,7 @@ bool staticMoveUndo(Path& path, Board& board, BoardOccupy& boardOccupy)
 			path.undoLastMove();
 		}
 	}
+	return true;
 }
 
 void Connect2::reset()
