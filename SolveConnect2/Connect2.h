@@ -26,7 +26,7 @@ public:
 	std::string getDisplayStr();
 	std::string getIdStr();
 
-private:
+protected:
 	int getPathIdFromDisplayId(int pathDisplayId);
 	Path& getPath(int pathDisplayId);
 

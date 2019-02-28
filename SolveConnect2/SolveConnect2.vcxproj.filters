@@ -72,9 +72,6 @@
     <ClCompile Include="MoveInstructionsExit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RecursionHelper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Direction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -93,13 +90,22 @@
     <ClCompile Include="GameInputRecursionNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameSolver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GameInputRecursionNodeInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IdManagerSqlite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameInputRecursionManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveInputRow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HighResolutionTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -161,9 +167,6 @@
     <ClInclude Include="MoveInstructionsExit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RecursionHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -179,13 +182,22 @@
     <ClInclude Include="GameInputRecursionNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameSolver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameInputRecursionNodeInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IdManagerSqlite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameInputRecursionManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveInputRow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HighResolutionTimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

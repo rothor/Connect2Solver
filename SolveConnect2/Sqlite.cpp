@@ -68,7 +68,7 @@ int Sqlite::finalize()
 	if (m_stmt == 0)
 		return 0;
 	int result = sqlite3_finalize(m_stmt);
-	if (result == 0)
+	//if (result == 0)
 		m_stmt = 0;
 	return result;
 }

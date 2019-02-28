@@ -156,12 +156,14 @@
     <ClCompile Include="Connect2.cpp" />
     <ClCompile Include="Direction.cpp" />
     <ClCompile Include="GameInput.cpp" />
+    <ClCompile Include="GameInputRecursionManager.cpp" />
     <ClCompile Include="GameInputRecursionNode.cpp" />
     <ClCompile Include="GameInputRecursionNodeInfo.cpp" />
-    <ClCompile Include="GameSolver.cpp" />
+    <ClCompile Include="HighResolutionTimer.cpp" />
     <ClCompile Include="IdManager.cpp" />
     <ClCompile Include="IdManagerSqlite.cpp" />
     <ClCompile Include="MoveInput.cpp" />
+    <ClCompile Include="MoveInputRow.cpp" />
     <ClCompile Include="MoveInstructionsEnter.cpp" />
     <ClCompile Include="MoveInstructionsExit.cpp" />
     <ClCompile Include="Path.cpp" />
@@ -169,7 +171,6 @@
     <ClCompile Include="PathInfoForBoard.cpp" />
     <ClCompile Include="PathMove.cpp" />
     <ClCompile Include="Point.cpp" />
-    <ClCompile Include="RecursionHelper.cpp" />
     <ClCompile Include="SolutionInputManager.cpp" />
     <ClCompile Include="Sqlite.cpp" />
     <ClCompile Include="Tile.cpp" />
@@ -180,6 +181,7 @@
     <ClCompile Include="SolveConnect2.cpp" />
     <ClCompile Include="TilePortal.cpp" />
     <ClCompile Include="TileStart.cpp" />
+    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board.h" />
@@ -187,12 +189,14 @@
     <ClInclude Include="Connect2.h" />
     <ClInclude Include="Direction.h" />
     <ClInclude Include="GameInput.h" />
+    <ClInclude Include="GameInputRecursionManager.h" />
     <ClInclude Include="GameInputRecursionNode.h" />
     <ClInclude Include="GameInputRecursionNodeInfo.h" />
-    <ClInclude Include="GameSolver.h" />
+    <ClInclude Include="HighResolutionTimer.h" />
     <ClInclude Include="IdManager.h" />
     <ClInclude Include="IdManagerSqlite.h" />
     <ClInclude Include="MoveInput.h" />
+    <ClInclude Include="MoveInputRow.h" />
     <ClInclude Include="MoveInstructionsEnter.h" />
     <ClInclude Include="MoveInstructionsExit.h" />
     <ClInclude Include="Path.h" />
@@ -200,7 +204,6 @@
     <ClInclude Include="PathInfoForBoard.h" />
     <ClInclude Include="PathMove.h" />
     <ClInclude Include="Point.h" />
-    <ClInclude Include="RecursionHelper.h" />
     <ClInclude Include="SolutionInputManager.h" />
     <ClInclude Include="Sqlite.h" />
     <ClInclude Include="Tile.h" />
@@ -210,6 +213,7 @@
     <ClInclude Include="TileNeutral.h" />
     <ClInclude Include="TilePortal.h" />
     <ClInclude Include="TileStart.h" />
+    <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sqlite3.dll" />
