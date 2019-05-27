@@ -158,11 +158,12 @@
     <ClCompile Include="GameInput.cpp" />
     <ClCompile Include="GameInputManager.cpp" />
     <ClCompile Include="Connect2Solver.cpp" />
+    <ClCompile Include="IdManager2.cpp" />
+    <ClCompile Include="Misc.cpp" />
     <ClCompile Include="RecursionStruct.cpp" />
     <ClCompile Include="HighResolutionTimer.cpp" />
     <ClCompile Include="IdManager.cpp" />
     <ClCompile Include="MoveInput.cpp" />
-    <ClCompile Include="MoveInputRow.cpp" />
     <ClCompile Include="MoveInstructionsEnter.cpp" />
     <ClCompile Include="MoveInstructionsExit.cpp" />
     <ClCompile Include="Path.cpp" />
@@ -180,7 +181,7 @@
     <ClCompile Include="SolveConnect2.cpp" />
     <ClCompile Include="TilePortal.cpp" />
     <ClCompile Include="TileStart.cpp" />
-    <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="Benchmarker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board.h" />
@@ -190,11 +191,12 @@
     <ClInclude Include="GameInput.h" />
     <ClInclude Include="GameInputManager.h" />
     <ClInclude Include="Connect2Solver.h" />
+    <ClInclude Include="IdManager2.h" />
+    <ClInclude Include="Misc.h" />
     <ClInclude Include="RecursionStruct.h" />
     <ClInclude Include="HighResolutionTimer.h" />
     <ClInclude Include="IdManager.h" />
     <ClInclude Include="MoveInput.h" />
-    <ClInclude Include="MoveInputRow.h" />
     <ClInclude Include="MoveInstructionsEnter.h" />
     <ClInclude Include="MoveInstructionsExit.h" />
     <ClInclude Include="Path.h" />
@@ -211,7 +213,7 @@
     <ClInclude Include="TileNeutral.h" />
     <ClInclude Include="TilePortal.h" />
     <ClInclude Include="TileStart.h" />
-    <ClInclude Include="Timer.h" />
+    <ClInclude Include="Benchmarker.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sqlite3.dll" />

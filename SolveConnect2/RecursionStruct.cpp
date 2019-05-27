@@ -10,11 +10,6 @@ RecursionStruct::RecursionStruct(Connect2 game) :
 	numBranches(0)
 {
 	game.reset();
-	gim = new GameInputManager;
-	idManager = new IdManager;
-	idManager->beginQuerying();
-	idManager->addIdIsUnique(game.getIdStr());
-	idManager->endQuerying();
 }
 
 std::string RecursionStruct::getDisplayStr()

@@ -15,11 +15,11 @@ public:
 	void removePrevGameInputs();
 	void beginQuerying();
 	void endQuerying();
-	void clear();
 
 protected:
 	Sqlite sql;
 	sqlite3_stmt* m_stmtInsert;
 	int m_max;
+	bool m_finalized;
 };
 

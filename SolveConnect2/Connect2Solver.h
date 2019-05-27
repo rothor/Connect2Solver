@@ -1,18 +1,22 @@
 #pragma once
 #include "RecursionStruct.h"
-#include "MoveInputRow.h"
+#include "Connect2.h"
 
 
 class Connect2Solver
 {
 public:
-	Connect2Solver(); // delete this later and make class static
+	Connect2Solver() = delete;
 
-	void solve(RecursionStruct& gii);
+	static void solve(std::string fileName, GameInput gi);
+	static void solveCustom(std::string fileName, GameInput gi, std::string endHash);
 
 protected:
-	void recurse(RecursionStruct& gii);
-	void addValidMoves(RecursionStruct& gii, GameInput& gi);
-	void addMove(RecursionStruct& gii, GameInput& gi, MoveInput& mi);
-	void cleanup(RecursionStruct& gii);
+	static void recurse(RecursionStruct& gii);
+	static void addValidMoves(RecursionStruct& gii, GameInput& gi);
+	static void addMove(RecursionStruct& gii, GameInput& gi, MoveInput& mi);
+
+	static void recurseCustom(RecursionStruct& gii, std::string& endHash);
+	static void addValidMovesCustom(RecursionStruct& gii, GameInput& gi, std::string& endHash);
+	static void addMoveCustom(RecursionStruct& gii, GameInput& gi, MoveInput& mi, std::string& endHash);
 };

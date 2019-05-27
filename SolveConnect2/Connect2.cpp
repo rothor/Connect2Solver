@@ -3,9 +3,9 @@
 #include "Direction.h"
 #include <iostream>
 
-bool staticMove(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy, bool& moveWasUndo);
-bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy);
-bool staticMoveUndo(Path& path, Board& board, BoardOccupy& boardOccupy);
+bool staticMove(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy, bool& moveWasUndo, bool singleStep = false);
+bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy, bool singleStep = false);
+bool staticMoveUndo(Path& path, Board& board, BoardOccupy& boardOccupy, bool singleStep = false);
 
 Connect2::Connect2(std::string fileName) :
 	m_board(fileName),
@@ -87,6 +87,19 @@ bool Connect2::move(MoveInput mi)
 	return moveValid;
 }
 
+bool Connect2::moveOne(MoveInput mi)
+{
+	Path& path = getPath(mi.pathId);
+	int length = path.getLength();
+	bool moveValid = staticMove(mi, path, m_board, m_boardOccupy, m_lastMoveWasUndo, true);
+	if (moveValid) {
+		m_lastPathMoved = mi.pathId;
+		m_lastPathMovedLength = length;
+	}
+
+	return moveValid;
+}
+
 void Connect2::moveAll(GameInput gi)
 {
 	for (MoveInput& mi : gi.miArr) {
@@ -158,12 +171,12 @@ void staticMoveDoForUndo(MoveInput& mi, Path& path, Board& board, BoardOccupy& b
 	}
 }
 
-bool staticMove(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy, bool& moveWasUndo)
+bool staticMove(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy, bool& moveWasUndo, bool singleStep)
 {
 	Point pt = path.getPos();
 	if (!path.havePreviousMoves()) {
 		moveWasUndo = false;
-		return staticMoveDo(mi, path, board, boardOccupy);
+		return staticMoveDo(mi, path, board, boardOccupy, singleStep);
 	}
 
 	PathMove move = path.getLastMove();
@@ -172,15 +185,15 @@ bool staticMove(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccup
 		(move.direction == Direction::down && mi.direction == Direction::up) ||
 		(move.direction == Direction::up && mi.direction == Direction::down)) {
 		moveWasUndo = true;
-		return staticMoveUndo(path, board, boardOccupy);
+		return staticMoveUndo(path, board, boardOccupy, singleStep);
 	}
 	else {
 		moveWasUndo = false;
-		return staticMoveDo(mi, path, board, boardOccupy);
+		return staticMoveDo(mi, path, board, boardOccupy, singleStep);
 	}
 }
 
-bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy)
+bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy, bool singleStep)
 {
 	Direction newDirection = mi.direction;
 	bool reset = false;
@@ -214,6 +227,8 @@ bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOcc
 		PathMove pathMove(ptStart, ptDest, newDirection, forced, instr.mustTeleport);
 		path.doMove(pathMove);
 		boardOccupy.setOccupied(ptDest, true);
+		if (singleStep && !forced) // ???
+			break; // ???
 
 		// Set stuff
 		if (instr.changeDirectionAfterMove)
@@ -241,7 +256,7 @@ bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOcc
 	return true;
 }
 
-bool staticMoveUndo(Path& path, Board& board, BoardOccupy& boardOccupy)
+bool staticMoveUndo(Path& path, Board& board, BoardOccupy& boardOccupy, bool singleStep)
 {
 	if (!path.havePreviousMoves())
 		return false;
@@ -263,6 +278,8 @@ bool staticMoveUndo(Path& path, Board& board, BoardOccupy& boardOccupy)
 		if (doUndo) {
 			boardOccupy.setOccupied(lastMove.ptDest, false);
 			path.undoLastMove();
+			if (singleStep) // ???
+				return true; // ???
 		}
 	}
 	return true;

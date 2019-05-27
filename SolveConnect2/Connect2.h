@@ -18,6 +18,7 @@ public:
 	int getNumOfPaths();
 	bool matches(Connect2& board);
 	bool move(MoveInput mi);
+	bool moveOne(MoveInput mi);
 	void moveAll(GameInput gi);
 	void undo();
 	void reset();
