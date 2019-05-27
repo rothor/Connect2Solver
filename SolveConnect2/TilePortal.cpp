@@ -9,7 +9,7 @@ TilePortal::TilePortal(Point dest) : Tile(),
 
 MoveInstructionsEnter TilePortal::getMoveInstructionsEnter(PathInfoForBoard pathInfo)
 {
-	return MoveInstructionsEnter(true, false, Direction::up);
+	return MoveInstructionsEnter(true, false, Direction::up, false);
 }
 
 MoveInstructionsExit TilePortal::getMoveInstructionsExit(PathInfoForBoard pathInfo)

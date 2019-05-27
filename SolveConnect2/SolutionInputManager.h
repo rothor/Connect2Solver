@@ -13,10 +13,10 @@ public:
 
 	void addMove(MoveInput mi);
 	GameInput getSolution();
-	void reset();
 	
 protected:
 	Connect2 m_game;
+	Connect2 m_gameStart;
 	GameInput m_gi;
 	std::map<std::string, GameInput> m_mapIdToGi;
 };

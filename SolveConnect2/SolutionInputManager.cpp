@@ -2,7 +2,8 @@
 
 
 SolutionInputManager::SolutionInputManager(Connect2 game) :
-	m_game(game)
+	m_game(game),
+	m_gameStart(game)
 {
 
 }
@@ -17,7 +18,7 @@ void SolutionInputManager::addMove(MoveInput mi)
 	bool inserted = false;
 	for (auto rit = m_gi.miArr.rbegin(); rit != m_gi.miArr.rend(); rit++) {
 		if ((*rit).pathId == mi.pathId) {
-			m_game.reset();
+			m_game = m_gameStart;
 			auto itPos = m_gi.miArr.begin();
 			for (auto it = m_gi.miArr.begin(); it != m_gi.miArr.end(); it++) {
 				m_game.move(*it);
@@ -35,7 +36,7 @@ void SolutionInputManager::addMove(MoveInput mi)
 	}
 	if (!inserted)
 		m_gi.miArr.push_back(mi);
-	m_game.reset();
+	m_game = m_gameStart;
 	m_game.moveAll(m_gi);
 	
 	auto ret = m_mapIdToGi.insert(std::pair<std::string, GameInput>(m_game.getIdStr(), m_gi));
@@ -47,11 +48,4 @@ void SolutionInputManager::addMove(MoveInput mi)
 GameInput SolutionInputManager::getSolution()
 {
 	return m_gi;
-}
-
-void SolutionInputManager::reset()
-{
-	m_game.reset();
-	m_gi.miArr.clear();
-	m_mapIdToGi.clear();
 }

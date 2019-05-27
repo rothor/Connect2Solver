@@ -15,6 +15,7 @@ public:
 	
 public:
 	Connect2 game;
+	Connect2 gameStart;
 	int movesEvaluated;
 	int movesEvaluatedValid;
 	bool solutionFound;

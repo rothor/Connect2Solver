@@ -8,7 +8,7 @@ TileNeutral::TileNeutral() : Tile()
 
 MoveInstructionsEnter TileNeutral::getMoveInstructionsEnter(PathInfoForBoard pathInfo)
 {
-	return MoveInstructionsEnter(true, false, Direction::up);
+	return MoveInstructionsEnter(true, false, Direction::up, true);
 }
 
 MoveInstructionsExit TileNeutral::getMoveInstructionsExit(PathInfoForBoard pathInfo)

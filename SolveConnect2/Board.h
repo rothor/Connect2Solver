@@ -24,7 +24,8 @@ public:
 	std::shared_ptr<Tile> getTile(int x, int y);
 
 protected:
-	std::vector<std::vector<std::shared_ptr<Tile>>> m_tileArr;
+	std::shared_ptr<std::vector<std::vector<std::shared_ptr<Tile>>>> m_tileArr;
+	//std::vector<std::vector<std::shared_ptr<Tile>>> m_tileArr;
 	int m_width;
 	int m_height;
 };

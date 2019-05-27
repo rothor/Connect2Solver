@@ -8,7 +8,7 @@ TileBlock::TileBlock() : Tile()
 
 MoveInstructionsEnter TileBlock::getMoveInstructionsEnter(PathInfoForBoard pathInfo)
 {
-	return MoveInstructionsEnter(false, false, Direction::up);
+	return MoveInstructionsEnter(false, false, Direction::up, false);
 }
 
 MoveInstructionsExit TileBlock::getMoveInstructionsExit(PathInfoForBoard pathInfo)

@@ -8,8 +8,8 @@ class Connect2Solver
 public:
 	Connect2Solver() = delete;
 
-	static void solve(std::string fileName, GameInput gi);
-	static void solveCustom(std::string fileName, GameInput gi, std::string endHash);
+	static void solve(Connect2 game);
+	static void solveCustom(Connect2 game, std::string endHash);
 
 protected:
 	static void recurse(RecursionStruct& gii);

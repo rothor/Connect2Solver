@@ -3,10 +3,12 @@
 
 MoveInstructionsEnter::MoveInstructionsEnter(bool canEnter,
 	bool changeDirectionAfterMove,
-	Direction newDirection) :
+	Direction newDirection,
+	bool canStop) :
 	canEnter(canEnter),
 	changeDirectionAfterMove(changeDirectionAfterMove),
-	newDirection(newDirection)
+	newDirection(newDirection),
+	canStop(canStop)
 {
 
 }

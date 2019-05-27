@@ -9,7 +9,7 @@ TileStart::TileStart(int pathId) : Tile(),
 
 MoveInstructionsEnter TileStart::getMoveInstructionsEnter(PathInfoForBoard pathInfo)
 {
-	return MoveInstructionsEnter(false, false, Direction::up);
+	return MoveInstructionsEnter(false, false, Direction::up, true);
 }
 
 MoveInstructionsExit TileStart::getMoveInstructionsExit(PathInfoForBoard pathInfo)

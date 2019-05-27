@@ -227,12 +227,15 @@ bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOcc
 		PathMove pathMove(ptStart, ptDest, newDirection, forced, instr.mustTeleport);
 		path.doMove(pathMove);
 		boardOccupy.setOccupied(ptDest, true);
-		if (singleStep && !forced) // ???
-			break; // ???
 
 		// Set stuff
 		if (instr.changeDirectionAfterMove)
 			newDirection = instr.newDirection;
+		
+		if (singleStep && instr.canStop) {
+			reset = false;
+			break;
+		}
 	}
 
 	if (reset) {
@@ -242,7 +245,7 @@ bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOcc
 			path.undoLastMove();
 		}
 	}
-	else if (forced) {
+	else if (forced && !singleStep) {
 		while (path.getLength() > lastValidLength) {
 			PathMove pathMove = path.getLastMove();
 			boardOccupy.setOccupied(pathMove.ptDest, false);
@@ -278,7 +281,7 @@ bool staticMoveUndo(Path& path, Board& board, BoardOccupy& boardOccupy, bool sin
 		if (doUndo) {
 			boardOccupy.setOccupied(lastMove.ptDest, false);
 			path.undoLastMove();
-			if (singleStep) // ???
+			if (singleStep && !prevWasForced) // ???
 				return true; // ???
 		}
 	}

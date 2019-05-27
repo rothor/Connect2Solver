@@ -3,13 +3,14 @@
 
 RecursionStruct::RecursionStruct(Connect2 game) :
 	game(game),
+	gameStart(game),
 	movesEvaluated(0),
 	movesEvaluatedValid(0),
 	solutionFound(false),
 	depth(0),
 	numBranches(0)
 {
-	game.reset();
+	
 }
 
 std::string RecursionStruct::getDisplayStr()

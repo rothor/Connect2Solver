@@ -8,17 +8,21 @@
 #include "Benchmarker.h"
 
 
-void Connect2Solver::solve(std::string fileName, GameInput gi)
+void Connect2Solver::solve(Connect2 game)
 {
 	Benchmarker::clearAllTimes();
 	Benchmarker::resetTimer("TotalTime"); // ## for benchmarking ##
-	Connect2 game(fileName);
 	RecursionStruct rs(game);
+	if (game.isSolved()) {
+		std::cout << "Already solved.\n";
+		return;
+	}
 	rs.idManager.beginQuerying();
 	bool isUnique = rs.idManager.addIdIsUnique(game.getIdStr());
 	rs.idManager.endQuerying();
 	rs.gim.beginQuerying();
-	rs.gim.addGameInput(gi);
+	GameInput giTemp;
+	rs.gim.addGameInput(giTemp);
 	rs.gim.endQuerying();
 
 	std::ofstream out("benchmarks.txt"); // for benchmark file
@@ -70,17 +74,13 @@ void Connect2Solver::solve(std::string fileName, GameInput gi)
 			break;
 	}
 	out.close(); // for benchmark file
-	for (int i = 0; i < gi.miArr.size(); i++) {
-		rs.solution.miArr.pop_front();
+	
+	SolutionInputManager sim(rs.gameStart);
+	for (auto it = rs.solution.miArr.begin(); it != rs.solution.miArr.end(); it++) {
+		sim.addMove(*it);
 	}
-	if (gi.miArr.size() == 0) {
-		game.reset();
-		SolutionInputManager sim(game);
-		for (auto it = rs.solution.miArr.begin(); it != rs.solution.miArr.end(); it++) {
-			sim.addMove(*it);
-		}
-		rs.solution = sim.getSolution();
-	}
+	rs.solution = sim.getSolution();
+
 	std::cout << rs.getDisplayStr() << "\n";
 
 	out.open("solution.txt"); // for solution file
@@ -120,7 +120,7 @@ void Connect2Solver::recurse(RecursionStruct& rs)
 void Connect2Solver::addValidMoves(RecursionStruct& rs, GameInput& gi)
 {
 	Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
-	rs.game.reset();
+	rs.game = rs.gameStart;
 	rs.game.moveAll(gi);
 	Benchmarker::addTime("moveAll"); // ## for benchmarking ##
 	
@@ -183,17 +183,21 @@ void Connect2Solver::addMove(RecursionStruct& rs, GameInput& gi, MoveInput& mi)
 
 //##############################################################################################
 
-void Connect2Solver::solveCustom(std::string fileName, GameInput gi, std::string endHash)
+void Connect2Solver::solveCustom(Connect2 game, std::string endHash)
 {
 	Benchmarker::clearAllTimes();
 	Benchmarker::resetTimer("total"); // ## for benchmarking ##
-	Connect2 game(fileName);
 	RecursionStruct rs(game);
+	if (game.getIdStr() == endHash) {
+		std::cout << "Already solved.\n";
+		return;
+	}
 	rs.idManager.beginQuerying();
 	bool isUnique = rs.idManager.addIdIsUnique(game.getIdStr());
 	rs.idManager.endQuerying();
 	rs.gim.beginQuerying();
-	rs.gim.addGameInput(gi);
+	GameInput giTemp;
+	rs.gim.addGameInput(giTemp);
 	rs.gim.endQuerying();
 
 	std::ofstream out("benchmarks.txt"); // for benchmark file
@@ -245,9 +249,13 @@ void Connect2Solver::solveCustom(std::string fileName, GameInput gi, std::string
 			break;
 	}
 	out.close(); // for benchmark file
-	for (int i = 0; i < gi.miArr.size(); i++) {
-		rs.solution.miArr.pop_front();
+
+	SolutionInputManager sim(rs.gameStart);
+	for (auto it = rs.solution.miArr.begin(); it != rs.solution.miArr.end(); it++) {
+		sim.addMove(*it);
 	}
+	rs.solution = sim.getSolution();
+
 	std::cout << rs.getDisplayStr() << "\n";
 
 	out.open("solution.txt"); // for solution file
@@ -287,7 +295,7 @@ void Connect2Solver::recurseCustom(RecursionStruct& rs, std::string& endHash)
 void Connect2Solver::addValidMovesCustom(RecursionStruct& rs, GameInput& gi, std::string& endHash)
 {
 	Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
-	rs.game.reset();
+	rs.game = rs.gameStart;
 	rs.game.moveAll(gi);
 	Benchmarker::addTime("moveAll"); // ## for benchmarking ##
 

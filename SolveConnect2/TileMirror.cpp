@@ -53,7 +53,7 @@ MoveInstructionsEnter TileMirror::getMoveInstructionsEnter(PathInfoForBoard path
 		}
 	}
 
-	return MoveInstructionsEnter(canEnter, true, direction);
+	return MoveInstructionsEnter(canEnter, true, direction, false);
 }
 
 MoveInstructionsExit TileMirror::getMoveInstructionsExit(PathInfoForBoard pathInfo)
