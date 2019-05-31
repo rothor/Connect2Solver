@@ -49,3 +49,8 @@ GameInput SolutionInputManager::getSolution()
 {
 	return m_gi;
 }
+
+Connect2 SolutionInputManager::getGameStart()
+{
+	return m_gameStart;
+}

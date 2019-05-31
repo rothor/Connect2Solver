@@ -1,29 +1,45 @@
 #include "MoveInput.h"
 
 
-MoveInput::MoveInput(int pathId, Direction direction) :
+MoveInput::MoveInput(int pathId, Direction direction, bool singleStep) :
 	pathId(pathId),
-	direction(direction)
+	direction(direction),
+	singleStep(singleStep)
 {
 
 }
 
 MoveInput::MoveInput(std::string saveStr)
 {
-	if (saveStr.size() != 2)
+	if (saveStr.size() == 2) {
+		pathId = std::stoi(saveStr.substr(0, 1));
+		direction = charToDirection(saveStr[1]);
+		singleStep = false;
+	}
+	else if (saveStr.size() == 3) {
+		pathId = std::stoi(saveStr.substr(0, 1));
+		direction = charToDirection(saveStr[1]);
+		if (saveStr[2] == 'o')
+			singleStep = true;
+		else
+			singleStep = false;
+	}
+	else
 		; // program error
-	pathId = std::stoi(saveStr.substr(0, 1));
-	direction = charToDirection(saveStr[1]);
 }
 
 MoveInput::MoveInput() :
 	pathId(0),
-	direction(Direction::up)
+	direction(Direction::up),
+	singleStep(false)
 {
 
 }
 
 std::string MoveInput::getSaveStr()
 {
-	return std::string(std::to_string(pathId) + directionToChar(direction));
+	if (singleStep)
+		return std::string(std::to_string(pathId) + directionToChar(direction) + 'o');
+	else
+		return std::string(std::to_string(pathId) + directionToChar(direction));
 }

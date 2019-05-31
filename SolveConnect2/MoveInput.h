@@ -6,7 +6,7 @@
 class MoveInput
 {
 public:
-	MoveInput(int pathId, Direction direction);
+	MoveInput(int pathId, Direction direction, bool singleStep = false);
 	MoveInput(std::string saveStr);
 	MoveInput();
 	std::string getSaveStr();
@@ -14,4 +14,5 @@ public:
 public:
 	Direction direction;
 	int pathId;
+	bool singleStep;
 };

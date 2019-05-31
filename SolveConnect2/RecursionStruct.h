@@ -3,7 +3,7 @@
 #include "GameInput.h"
 #include "Connect2.h"
 #include "IdManager.h"
-#include "IdManager2.h"
+//#include "IdManager2.h"
 #include "GameInputManager.h"
 
 
@@ -11,6 +11,7 @@ class RecursionStruct
 {
 public:
 	RecursionStruct(Connect2 game);
+	void addSolution(GameInput gi);
 	std::string getDisplayStr();
 	
 public:
@@ -19,7 +20,7 @@ public:
 	int movesEvaluated;
 	int movesEvaluatedValid;
 	bool solutionFound;
-	GameInput solution;
+	std::list<GameInput> solutionList;
 	int depth;
 	int numBranches;
 	IdManager idManager;

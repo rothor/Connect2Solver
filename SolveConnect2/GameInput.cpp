@@ -50,6 +50,8 @@ std::string GameInput::getDisplayStr()
 		}
 		prevPathId = mi.pathId;
 		retStr += directionToChar(mi.direction) + 'A' - 'a'; // to upper
+		if (mi.singleStep)
+			retStr += 'o';
 	}
 	return retStr;
 }

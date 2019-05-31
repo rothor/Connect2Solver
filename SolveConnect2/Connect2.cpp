@@ -2,10 +2,19 @@
 #include "Connect2.h"
 #include "Direction.h"
 #include <iostream>
+#include <algorithm>
 
 bool staticMove(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy, bool& moveWasUndo, bool singleStep = false);
 bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy, bool singleStep = false);
 bool staticMoveUndo(Path& path, Board& board, BoardOccupy& boardOccupy, bool singleStep = false);
+
+
+bool Connect2::sortPathLength(int a, int b)
+{
+	return m_path[a].getMaxLength() < m_path[b].getMaxLength();
+}
+
+#include <functional>
 
 Connect2::Connect2(std::string fileName) :
 	m_board(fileName),
@@ -19,6 +28,9 @@ Connect2::Connect2(std::string fileName) :
 	// Loop through each tile
 	std::string tile;
 	int totalTiles = m_width * m_height;
+
+	// Get max path id
+	int maxId = 0;
 	for (int y = m_height - 1; y >= 0; y--) {
 		for (int x = 0; x < m_width; x++) {
 			readFile >> tile;
@@ -26,18 +38,49 @@ Connect2::Connect2(std::string fileName) :
 				std::string other = tile.substr(1);
 				int hyphen = other.find_first_of(char('-'));
 				std::string pathIdStr = other.substr(0, hyphen);
-				std::string pathLengthStr = other.substr(hyphen + 1);
 				int pathId = std::stoi(pathIdStr);
-				int pathLength = std::stoi(pathLengthStr);
-				m_path.push_back(Path(pathId, pathLength, Point(x, y)));
-			}
-			else if (tile[0] == char('e')) {
-				m_endPointArr.push_back(Point(x, y));
+				if (pathId > maxId)
+					maxId = pathId;
 			}
 		}
 	}
-	
+	for (int i = 0; i < maxId; i++) {
+		m_path.push_back(Path(0, 0, Point(0, 0)));
+		m_endPointArr.push_back(Point(0, 0));
+	}
 	readFile.close();
+
+	std::ifstream readFile2(fileName);
+	readFile2 >> temp >> temp >> temp >> temp;
+
+	// Get path data
+	for (int y = m_height - 1; y >= 0; y--) {
+		for (int x = 0; x < m_width; x++) {
+			readFile2 >> tile;
+			if (tile[0] == char('s')) {
+				std::string other = tile.substr(1);
+				int hyphen = other.find_first_of(char('-'));
+				std::string pathIdStr = other.substr(0, hyphen);
+				std::string pathLengthStr = other.substr(hyphen + 1);
+				int pathId = std::stoi(pathIdStr);
+				int pathLength = std::stoi(pathLengthStr);
+				m_path[pathId - 1] = Path(pathId, pathLength, Point(x, y));
+			}
+			else if (tile[0] == char('e')) {
+				std::string pathIdStr = tile.substr(1);
+				int pathId = std::stoi(pathIdStr);
+				m_endPointArr[pathId - 1] = Point(x, y);
+			}
+		}
+	}
+
+	readFile2.close();
+
+	
+	for (int i = 0; i < m_path.size(); i++) {
+		m_pathLengthVec.push_back(i);
+	}
+	std::sort(m_pathLengthVec.begin(), m_pathLengthVec.end(), std::bind(&Connect2::sortPathLength, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 bool Connect2::isSolved()
@@ -55,30 +98,11 @@ int Connect2::getNumOfPaths()
 	return m_path.size();
 }
 
-bool Connect2::matches(Connect2& board)
-{
-	// Fast check first
-	for (int i = 0; i < m_path.size(); i++) {
-		if (m_path[i].getLength() != board.m_path[i].getLength())
-			return false;
-	}
-
-	// Then slow check
-	for (int i = 0; i < m_path.size(); i++) {
-		for (int j = 0; j < m_path[i].getLength(); j++) {
-			if (m_path[i].getMove(j).direction != board.m_path[i].getMove(j).direction)
-				return false;
-		}
-	}
-
-	return true;
-}
-
-bool Connect2::move(MoveInput mi)
+bool Connect2::move(MoveInput& mi)
 {
 	Path& path = getPath(mi.pathId);
 	int length = path.getLength();
-	bool moveValid = staticMove(mi, path, m_board, m_boardOccupy, m_lastMoveWasUndo);
+	bool moveValid = staticMove(mi, path, m_board, m_boardOccupy, m_lastMoveWasUndo, mi.singleStep);
 	if (moveValid) {
 		m_lastPathMoved = mi.pathId;
 		m_lastPathMovedLength = length;
@@ -87,20 +111,24 @@ bool Connect2::move(MoveInput mi)
 	return moveValid;
 }
 
-bool Connect2::moveOne(MoveInput mi)
+bool Connect2::moveOnlyDo(MoveInput& mi)
 {
 	Path& path = getPath(mi.pathId);
 	int length = path.getLength();
-	bool moveValid = staticMove(mi, path, m_board, m_boardOccupy, m_lastMoveWasUndo, true);
+	bool moveValid = staticMove(mi, path, m_board, m_boardOccupy, m_lastMoveWasUndo, mi.singleStep);
 	if (moveValid) {
 		m_lastPathMoved = mi.pathId;
 		m_lastPathMovedLength = length;
+	}
+	if (m_lastMoveWasUndo) {
+		undo();
+		return false;
 	}
 
 	return moveValid;
 }
 
-void Connect2::moveAll(GameInput gi)
+void Connect2::moveAll(GameInput& gi)
 {
 	for (MoveInput& mi : gi.miArr) {
 		move(mi);
@@ -111,7 +139,6 @@ void staticMoveDoForUndo(MoveInput& mi, Path& path, Board& board, BoardOccupy& b
 /* Undoes the last move. Only keeps track of the last move,
  * so this shouldn't be called more than once between each
  * move.
- * Also, this currently does not work and should not be used.
  */
 void Connect2::undo()
 {
@@ -301,6 +328,28 @@ void Connect2::reset()
 			m_boardOccupy.setOccupied(Point(x, y), false);
 		}
 	}
+}
+
+bool Connect2::pathIsSolved(int pathId)
+{
+	return m_boardOccupy.isOccupied(m_endPointArr[pathId]);
+}
+
+bool Connect2::pathIsFull(int pathId)
+{
+	return m_path[pathId].isFull();
+}
+
+bool Connect2::pathCanBeSolved(int pathId)
+{
+	Point pos = m_path[pathId].getPos();
+	int dist = abs(pos.x - m_endPointArr[pathId].x) + abs(pos.y - m_endPointArr[pathId].y);
+	return m_path[pathId].getMaxLength() - m_path[pathId].getLength() >= dist;
+}
+
+std::vector<int>* Connect2::getPathIdsOrderedByLength()
+{
+	return &m_pathLengthVec;
 }
 
 int Connect2::getPathDisplayId(int pathId)
@@ -504,12 +553,9 @@ std::string Connect2::getIdStr()
  */
 int Connect2::getPathIdFromDisplayId(int pathDisplayId)
 {
-	for (int i = 0; i < m_path.size(); i++) {
-		if (m_path[i].getId() == pathDisplayId)
-			return i;
-	}
+	return pathDisplayId - 1;
 
-	return 0;
+	//return 0;
 }
 
 Path& Connect2::getPath(int pathDisplayId)

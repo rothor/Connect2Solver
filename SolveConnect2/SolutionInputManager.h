@@ -13,6 +13,7 @@ public:
 
 	void addMove(MoveInput mi);
 	GameInput getSolution();
+	Connect2 getGameStart();
 	
 protected:
 	Connect2 m_game;
