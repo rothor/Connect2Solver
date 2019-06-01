@@ -358,76 +358,20 @@ void Connect2Solver::addMoveCustom(RecursionStruct& rs, GameInput& gi, MoveInput
 
 void Connect2Solver::solveEndState(Connect2 game)
 {
-	/*std::ofstream out2("solution.txt"); // for solution file
-	out2.clear(); // for solution file
-	out2.close(); // for solution file*/
-
-	std::vector<std::unique_ptr<RecursionStruct>> rsVec;
-	for (int i = 0; i < game.getNumOfPaths(); i++) {
-		rsVec.push_back(std::unique_ptr<RecursionStruct>(new RecursionStruct(game)));
-		solveEndStateOnce(*rsVec[i], i);	
-	}
-	
-	std::list<GameInput> solutionListTemp;
-	std::list<GameInput> solutionList;
-	solutionList.push_back(GameInput());
-
-	for (int i = 0; i < rsVec.size(); i++) {
-		std::cout << "Adding path: " << i + 1 << "\n";
-		int total = solutionList.size() * rsVec[i]->solutionList.size();
-		int j = 1;
-		for (GameInput& gi : solutionList) {
-			Connect2 gameStart = game;
-			gameStart.moveAll(gi);
-			for (auto it2 = rsVec[i]->solutionList.begin(); it2 != rsVec[i]->solutionList.end(); it2++) {
-				if (j % (int)pow(10, ceil(log10(j + 1)) - 1) == 0) {
-					std::cout << "\r\t" <<
-						Misc::padStr(Misc::formatIntWithCommas(j), 13) <<
-						" / " <<
-						Misc::padStr(Misc::formatIntWithCommas(total), 13);
-				}
-				j++;
-				Connect2 gameStart2 = gameStart;
-				gameStart2.moveAll(*it2);
-				if (gameStart2.pathIsSolved(i)) {
-					GameInput newGi = gi;
-					newGi.miArr.insert(newGi.miArr.end(), (*it2).miArr.begin(), (*it2).miArr.end()); // look at this later
-					solutionListTemp.push_back(newGi);
-				}
-			}
-		}
-		std::cout << "\n";
-		solutionList = solutionListTemp;
-		solutionListTemp.clear();
-	}
-
-	RecursionStruct newRs(game);
-	for (GameInput gi : solutionList) {
-		newRs.addSolution(gi);
-		newRs.solutionFound = true;
-	}
-	std::cout << newRs.getDisplayStr() << "\n";
-	std::ofstream out("solution.txt"); // for solution file
-	out.clear(); // for solution file
-	out << newRs.getDisplayStr(); // for solution file
-	out.close(); // for solution file
-}
-
-void Connect2Solver::solveEndStateOnce(RecursionStruct& rs, int pathToSolve)
-{
 	Benchmarker::clearAllTimes();
 	Benchmarker::resetTimer("TotalTime"); // ## for benchmarking ##
+	RecursionStruct rs(game);
+	if (game.isSolved()) {
+		std::cout << "Already solved.\n";
+		return;
+	}
+	rs.idManager.beginQuerying();
+	bool isUnique = rs.idManager.addIdIsUnique(game.getIdStr());
+	rs.idManager.endQuerying();
 	rs.gim.beginQuerying();
 	GameInput giTemp;
 	rs.gim.addGameInput(giTemp);
 	rs.gim.endQuerying();
-	if (rs.gameStart.isSolved()) {
-		//std::cout << "Already solved.\n";
-		return;
-	}
-	rs.idManager.beginQuerying();
-	bool isUnique = rs.idManager.addIdIsUnique(rs.gameStart.getIdStr());
-	rs.idManager.endQuerying();
 
 	std::ofstream out("benchmarks.txt"); // for benchmark file
 	out.clear(); // for benchmark file
@@ -444,11 +388,11 @@ void Connect2Solver::solveEndStateOnce(RecursionStruct& rs, int pathToSolve)
 		Benchmarker::clearTime("addInput"); // ## for benchmarking ##
 		Benchmarker::clearTime("recurse"); // ## for benchmarking ##
 		Benchmarker::resetTimer("recurse"); // ## for benchmarking ##
-		recurseEndState(rs, pathToSolve);
+		recurseEndState(rs);
 		Benchmarker::addTime("recurse"); // ## for benchmarking ##
 		rs.depth++;
 
-		if (rs.depth % 10 == 1 && rs.depth != 1)
+		if (rs.depth % 5 == 1 && rs.depth != 1)
 			std::cout << "\n";
 		else
 			std::cout << "\r";
@@ -476,21 +420,22 @@ void Connect2Solver::solveEndStateOnce(RecursionStruct& rs, int pathToSolve)
 		out << Benchmarker::getStr("TotalTime") << "\n\n";
 		// --- for benchmark file
 
+		if (rs.solutionFound)
+			break;
 		if (rs.numBranches == 0)
 			break;
 	}
 	out.close(); // for benchmark file
-	std::cout << "\n";
 
-	//std::cout << "\n" << rs.getDisplayStr() << "\n";
+	std::cout << "\n" << rs.getDisplayStr() << "\n";
 
-	/*out.open("solution.txt", std::ios::app); // for solution file
-	//out.clear(); // for solution file
-	out << rs.getDisplayStr() << "\n\n\n"; // for solution file
-	out.close(); // for solution file*/
+	out.open("solution.txt"); // for solution file
+	out.clear(); // for solution file
+	out << rs.getDisplayStr(); // for solution file
+	out.close(); // for solution file
 }
 
-void Connect2Solver::recurseEndState(RecursionStruct& rs, int pathToSolve)
+void Connect2Solver::recurseEndState(RecursionStruct& rs)
 {
 	rs.gim.beginQuerying();
 	rs.idManager.beginQuerying();
@@ -505,7 +450,7 @@ void Connect2Solver::recurseEndState(RecursionStruct& rs, int pathToSolve)
 		Benchmarker::addTime("nextRow"); // ## for benchmarking ##
 		if (!anotherRowExists)
 			break;
-		addValidMovesEndState(rs, gi, pathToSolve);
+		addValidMovesEndState(rs, gi);
 	}
 	Benchmarker::resetTimer("rmvPrevInputs"); // ## for benchmarking ##
 	rs.gim.removePrevGameInputs();
@@ -515,7 +460,7 @@ void Connect2Solver::recurseEndState(RecursionStruct& rs, int pathToSolve)
 	rs.idManager.endQuerying();
 }
 
-void Connect2Solver::addValidMovesEndState(RecursionStruct& rs, GameInput& gi, int pathToSolve)
+void Connect2Solver::addValidMovesEndState(RecursionStruct& rs, GameInput& gi)
 {
 	Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
 	rs.game = rs.gameStart;
@@ -523,15 +468,16 @@ void Connect2Solver::addValidMovesEndState(RecursionStruct& rs, GameInput& gi, i
 	Benchmarker::addTime("moveAll"); // ## for benchmarking ##
 
 	std::list<Direction> directions{ Direction::down, Direction::up, Direction::left, Direction::right };
-	std::vector<int> pathList{ pathToSolve };
-	for (auto it = pathList.begin(); it != pathList.end(); it++) {
+	std::vector<int>* pathList = rs.game.getPathIdsOrderedByLength();
+	for (auto it = pathList->begin(); it != pathList->end(); it++) {
 		if (rs.game.pathIsFull(*it)) {
-			break;
+			continue;
 		}
 		for (Direction direction : directions) {
 			MoveInput newMi = MoveInput(rs.game.getPathDisplayId(*it), direction, true);
 			addMoveEndState(rs, gi, newMi);
 		}
+		break;
 	}
 }
 
@@ -560,7 +506,7 @@ void Connect2Solver::addMoveEndState(RecursionStruct& rs, GameInput& gi, MoveInp
 	std::string id = rs.game.getIdStr();
 	Benchmarker::addTime("getGameId"); // ## for benchmarking ##
 	Benchmarker::resetTimer("idIsUnique"); // ## for benchmarking ##
-	bool isUnique = true; //rs.idManager.addIdIsUnique(id);
+	bool isUnique = rs.idManager.addIdIsUnique(id);
 	Benchmarker::addTime("idIsUnique"); // ## for benchmarking ##
 	if (!isUnique) { // If game id already exists
 		Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
@@ -569,7 +515,7 @@ void Connect2Solver::addMoveEndState(RecursionStruct& rs, GameInput& gi, MoveInp
 		return;
 	}
 
-	bool isSolved = rs.game.pathIsSolved(pathId);
+	bool isSolved = rs.game.isSolved();
 	if (isSolved) {
 		rs.solutionFound = true;
 		GameInput solutionGi = gi;
