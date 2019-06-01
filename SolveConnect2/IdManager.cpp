@@ -2,10 +2,13 @@
 #include <Windows.h>
 
 
-IdManager::IdManager()
+int IdManager::instanceCount = 1;
+
+IdManager::IdManager(int anInt)
 {
-	DeleteFile(L"hash.sqlite"); // Make sure database starts out fresh
-	int rc = sqlite3_open("hash.sqlite", &(m_sql.m_sql));
+	m_fileName = std::string("hash" + std::to_string(instanceCount++) + ".sqlite");
+	DeleteFileA(m_fileName.c_str());
+	int rc = sqlite3_open(m_fileName.c_str(), &(m_sql.m_sql));
 	std::string stmt = "PRAGMA synchronous = OFF;"; // faster
 	rc = sqlite3_exec(m_sql.m_sql, stmt.c_str(), 0, 0, 0);
 	stmt = "PRAGMA JOURNAL_MODE = OFF;"; // faster
@@ -17,7 +20,7 @@ IdManager::IdManager()
 IdManager::~IdManager()
 {
 	int rc = sqlite3_close(m_sql.m_sql);
-	DeleteFile(L"hash.sqlite");
+	DeleteFileA(m_fileName.c_str());
 }
 
 bool IdManager::addIdIsUnique(std::string gameId)

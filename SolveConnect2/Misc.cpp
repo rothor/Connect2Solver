@@ -22,7 +22,7 @@ std::string Misc::formatIntWithCommas(int v)
 	if (v == 0)
 		return std::string("0");
 	std::string str = std::to_string(v);
-	int numDigits = floor(log(v) / log(10)) + 1;
+	int numDigits = ceil(log10(v + 1));
 	int numCommas = numDigits / 3;
 	int numLeftDigits = numDigits % 3;
 	if (numLeftDigits == 0) {

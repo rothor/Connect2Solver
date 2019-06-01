@@ -2,11 +2,14 @@
 #include <Windows.h>
 
 
-GameInputManager::GameInputManager() :
+int GameInputManager::instanceCount = 1;
+
+GameInputManager::GameInputManager(int anInt) :
 	m_finalized(false)
 {
-	DeleteFile(L"input.sqlite"); // Make sure database starts out fresh
-	int rc = sqlite3_open("input.sqlite", &(sql.m_sql));
+	m_fileName = std::string("input" + std::to_string(instanceCount++) + ".sqlite");
+	DeleteFileA(m_fileName.c_str());
+	int rc = sqlite3_open(m_fileName.c_str(), &(sql.m_sql));
 	std::string stmt = "PRAGMA synchronous = OFF;"; // faster
 	rc = sqlite3_exec(sql.m_sql, stmt.c_str(), 0, 0, 0);
 	stmt = "PRAGMA JOURNAL_MODE = OFF;"; // faster
@@ -18,7 +21,7 @@ GameInputManager::GameInputManager() :
 GameInputManager::~GameInputManager()
 {
 	int rc = sqlite3_close(sql.m_sql);
-	DeleteFile(L"input.sqlite");
+	DeleteFileA(m_fileName.c_str());
 }
 
 void GameInputManager::getRows()

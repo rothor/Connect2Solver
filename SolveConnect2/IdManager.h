@@ -7,7 +7,7 @@
 class IdManager
 {
 public:
-	IdManager();
+	IdManager(int anInt = 1);
 	~IdManager();
 
 	bool addIdIsUnique(std::string gameId);
@@ -16,4 +16,6 @@ public:
 
 protected:
 	Sqlite m_sql;
+	std::string m_fileName;
+	static int instanceCount;
 };

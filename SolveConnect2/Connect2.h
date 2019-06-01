@@ -16,7 +16,6 @@ public:
 
 	bool isSolved();
 	int getNumOfPaths();
-	bool matches(Connect2& board);
 	bool move(MoveInput& mi);
 	bool moveOnlyDo(MoveInput& mi);
 	void moveAll(GameInput& gi);
@@ -25,6 +24,7 @@ public:
 	bool pathIsSolved(int pathId);
 	bool pathIsFull(int pathId);
 	bool pathCanBeSolved(int pathId);
+	bool portalsExist();
 	std::vector<int>* getPathIdsOrderedByLength();
 	bool sortPathLength(int a, int b);
 
@@ -44,6 +44,7 @@ protected:
 	int m_width;
 	int m_height;
 	std::vector<int> m_pathLengthVec;
+	bool m_portalsExist;
 
 	int m_lastPathMoved;
 	int m_lastPathMovedLength;

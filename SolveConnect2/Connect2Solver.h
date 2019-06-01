@@ -21,7 +21,8 @@ protected:
 	static void addValidMovesCustom(RecursionStruct& gii, GameInput& gi, std::string& endHash);
 	static void addMoveCustom(RecursionStruct& gii, GameInput& gi, MoveInput& mi, std::string& endHash);
 
-	static void recurseEndState(RecursionStruct& gii);
-	static void addValidMovesEndState(RecursionStruct& gii, GameInput& gi);
+	static void solveEndStateOnce(RecursionStruct& rs, int pathToSolve);
+	static void recurseEndState(RecursionStruct& gii, int pathToSolve);
+	static void addValidMovesEndState(RecursionStruct& gii, GameInput& gi, int pathToSolve);
 	static void addMoveEndState(RecursionStruct& gii, GameInput& gi, MoveInput& mi);
 };

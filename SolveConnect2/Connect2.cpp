@@ -19,7 +19,8 @@ bool Connect2::sortPathLength(int a, int b)
 Connect2::Connect2(std::string fileName) :
 	m_board(fileName),
 	m_boardOccupy(fileName),
-	m_lastPathMoved(0)
+	m_lastPathMoved(0),
+	m_portalsExist(false)
 {
 	std::ifstream readFile(fileName);
 	std::string temp;
@@ -41,6 +42,9 @@ Connect2::Connect2(std::string fileName) :
 				int pathId = std::stoi(pathIdStr);
 				if (pathId > maxId)
 					maxId = pathId;
+			}
+			else if (tile[0] == char('p')) {
+				m_portalsExist = true;
 			}
 		}
 	}
@@ -261,6 +265,7 @@ bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOcc
 		
 		if (singleStep && instr.canStop) {
 			reset = false;
+			forced = false; // eh...
 			break;
 		}
 	}
@@ -272,7 +277,7 @@ bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOcc
 			path.undoLastMove();
 		}
 	}
-	else if (forced && !singleStep) {
+	else if (forced) {
 		while (path.getLength() > lastValidLength) {
 			PathMove pathMove = path.getLastMove();
 			boardOccupy.setOccupied(pathMove.ptDest, false);
@@ -345,6 +350,11 @@ bool Connect2::pathCanBeSolved(int pathId)
 	Point pos = m_path[pathId].getPos();
 	int dist = abs(pos.x - m_endPointArr[pathId].x) + abs(pos.y - m_endPointArr[pathId].y);
 	return m_path[pathId].getMaxLength() - m_path[pathId].getLength() >= dist;
+}
+
+bool Connect2::portalsExist()
+{
+	return m_portalsExist;
 }
 
 std::vector<int>* Connect2::getPathIdsOrderedByLength()

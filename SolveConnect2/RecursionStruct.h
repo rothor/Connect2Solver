@@ -25,4 +25,8 @@ public:
 	int numBranches;
 	IdManager idManager;
 	GameInputManager gim;
+
+protected:
+	int instance;
+	static int instanceCount;
 };
