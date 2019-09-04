@@ -3,6 +3,7 @@
 #include "Direction.h"
 #include <iostream>
 #include <algorithm>
+#include <Windows.h>
 
 bool staticMove(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy, bool& moveWasUndo, bool singleStep = false);
 bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy, bool singleStep = false);
@@ -15,12 +16,15 @@ bool Connect2::sortPathLength(int a, int b)
 }
 
 #include <functional>
+#include <Wincon.h>
 
 Connect2::Connect2(std::string fileName) :
 	m_board(fileName),
 	m_boardOccupy(fileName),
 	m_lastPathMoved(0),
-	m_portalsExist(false)
+	m_portalsExist(false),
+	m_lastMoveWasUndo(false),
+	m_lastPathMovedLength(0)
 {
 	std::ifstream readFile(fileName);
 	std::string temp;
@@ -367,16 +371,16 @@ int Connect2::getPathDisplayId(int pathId)
 	return m_path[pathId].getId();
 }
 
-int min(int x, int y)
+int min2(int x, int y)
 {
 	return x < y ? x : y;
 }
 
 // Returns string for displaying in the console output.
-std::string Connect2::getDisplayStr()
+void Connect2::getDisplayStr()
 {
 	std::string unnoccupiedTileStr = " ' ";
-	std::string occupiedTileStr = " o ";
+	std::string occupiedTileStr = " + ";
 	std::string blockTileStr = "[x]";
 	std::string portalOccupiedStr = "(o)";
 	std::string portalUnnoccupiedStr = "( )";
@@ -392,61 +396,74 @@ std::string Connect2::getDisplayStr()
 	std::string dirLeft = " < ";
 	std::string dirRight = " > ";
 	std::string placeholderStr = "???";
+	
+	std::vector<int> pathColor = {
+		FOREGROUND_RED,
+		FOREGROUND_GREEN | FOREGROUND_INTENSITY,
+		FOREGROUND_BLUE | FOREGROUND_GREEN,
+		FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY,
+		FOREGROUND_BLUE | FOREGROUND_INTENSITY,
+		FOREGROUND_BLUE | FOREGROUND_RED,
+		FOREGROUND_BLUE | FOREGROUND_RED | FOREGROUND_INTENSITY,
+		FOREGROUND_GREEN | FOREGROUND_RED,
+		FOREGROUND_GREEN,
+		FOREGROUND_INTENSITY, // grey
+		FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED // white
+	};
 
 	// Board vec
 	std::vector<std::vector<std::string>> board;
 	board.resize(m_width);
+	std::vector<std::vector<int>> boardColor;
+	boardColor.resize(m_width);
 	for (int i = 0; i < m_width; i++) {
 		board[i].resize(m_height, unnoccupiedTileStr);
+		boardColor[i].resize(m_height, pathColor[9]);
 	}
 	// Horizontal connections
 	std::vector<std::vector<std::string>> connHori;
 	connHori.resize(m_width - 1);
+	std::vector<std::vector<int>> connHoriColor;
+	connHoriColor.resize(m_width - 1);
 	for (int i = 0; i < m_width - 1; i++) {
 		connHori[i].resize(m_height, "  ");
+		connHoriColor[i].resize(m_height, pathColor[9]);
 	}
 	// Vertical connections
 	std::vector<std::vector<std::string>> connVert;
 	connVert.resize(m_width);
+	std::vector<std::vector<int>> connVertColor;
+	connVertColor.resize(m_width);
 	for (int i = 0; i < m_width; i++) {
 		connVert[i].resize(m_height - 1, " ");
+		connVertColor[i].resize(m_height - 1, pathColor[9]);
 	}
 
-	// Loop through each path
-	for (int i = 0; i < m_path.size(); i++) {
-		// Loop through each path move
-		for (int j = 0; j < m_path[i].getLength(); j++) {
-			PathMove move = m_path[i].getMove(j);
-
-			// Set connection
-			if (!move.isTeleport) {
-				if (move.ptDest.x != move.ptBegin.x)
-					connHori[min(move.ptBegin.x, move.ptDest.x)][move.ptBegin.y] = "--";
-				else // else the y's must be different
-					connVert[move.ptBegin.x][min(move.ptBegin.y, move.ptDest.y)] = "|";
-			}
-		}
-	}
-	// Loop through each tile
+	// Loop through each tile, set tile types and set default colors
 	for (int y = 0; y < m_height; y++) {
 		for (int x = 0; x < m_width; x++) {
 			std::shared_ptr<Tile> tile = m_board.getTile(x, y);
 			if (tile->m_type == TileType::neutral) {
+				boardColor[x][y] = pathColor[9];
 				if (m_boardOccupy.isOccupied(Point(x, y)))
 					board[x][y] = occupiedTileStr;
 				else
-					; // board[x][y] = unnoccupiedTileStr;
+					board[x][y] = unnoccupiedTileStr;
 			}
-			else if (tile->m_type == TileType::block)
+			else if (tile->m_type == TileType::block) {
+				boardColor[x][y] = pathColor[9];
 				board[x][y] = blockTileStr;
+			}
 			else if (tile->m_type == TileType::portal) {
+				boardColor[x][y] = pathColor[9];
 				if (m_boardOccupy.isOccupied(Point(x, y)))
 					board[x][y] = portalOccupiedStr;
 				else
 					board[x][y] = portalUnnoccupiedStr;
 			}
 			else if (tile->m_type == TileType::mirror) {
-				Tile* tileNone = &*tile; 
+				boardColor[x][y] = pathColor[9];
+				Tile* tileNone = &*tile;
 				TileMirror* mirror = static_cast<TileMirror*>(tileNone);
 				if (mirror->m_mirrorType == MirrorType::bl)
 					board[x][y] = mirrorTileBlStr;
@@ -464,12 +481,29 @@ std::string Connect2::getDisplayStr()
 				int pos = board[x][y].find("?");
 				board[x][y].replace(pos, 1, std::to_string(start->m_pathId));
 			}
+			else if (tile->m_type == TileType::end) {
+				Tile* tileNone = &*tile;
+				TileEnd* start = static_cast<TileEnd*>(tileNone);
+				if (m_boardOccupy.isOccupied(Point(x, y)))
+					board[x][y] = endTileOccupiedStr;
+				else
+					board[x][y] = endTileUnnoccupiedStr;
+				int pos = board[x][y].find("?");
+				board[x][y].replace(pos, 1, std::to_string(start->m_pathId));
+				boardColor[x][y] = pathColor[start->m_pathId - 1];
+			}
 		}
 	}
-	// Loop through each path
+	// Loop through each path, set connections and path tile colors and connection colors and path arrows
 	for (int i = 0; i < m_path.size(); i++) {
+		Point startPt = m_path[i].getStartPoint();
+
+		// Set path start tile color
+		boardColor[startPt.x][startPt.y] = pathColor[i];
+
 		// Set path arrow
-		if (m_path[i].getLength() > 0) {
+		TileType type = m_board.getTile(m_path[i].getPos().x, m_path[i].getPos().y)->m_type;
+		if (m_path[i].getLength() > 0 && type != TileType::end) {
 			std::string dirStr;
 			Direction direction = m_path[i].getDirection();
 			if (direction == Direction::up)
@@ -482,70 +516,88 @@ std::string Connect2::getDisplayStr()
 				dirStr = dirRight;
 			board[m_path[i].getPos().x][m_path[i].getPos().y] = dirStr;
 		}
-	}
-	// Loop through each tile
-	for (int y = 0; y < m_height; y++) {
-		for (int x = 0; x < m_width; x++) {
-			std::shared_ptr<Tile> tile = m_board.getTile(x, y);
-			if (tile->m_type == TileType::end) {
-				Tile* tileNone = &*tile;
-				TileEnd* start = static_cast<TileEnd*>(tileNone);
-				if (m_boardOccupy.isOccupied(Point(x, y)))
-					board[x][y] = endTileOccupiedStr;
-				else
-					board[x][y] = endTileUnnoccupiedStr;
-				int pos = board[x][y].find("?");
-				board[x][y].replace(pos, 1, std::to_string(start->m_pathId));
+
+		// Loop through each path move
+		for (int j = 0; j < m_path[i].getLength(); j++) {
+			PathMove move = m_path[i].getMove(j);
+
+			// Set path destination point color
+			boardColor[move.ptDest.x][move.ptDest.y] = pathColor[i];
+
+			// Set connection
+			if (!move.isTeleport) {
+				if (move.ptDest.x != move.ptBegin.x) {
+					connHori[min(move.ptBegin.x, move.ptDest.x)][move.ptBegin.y] = "--";
+					connHoriColor[min(move.ptBegin.x, move.ptDest.x)][move.ptBegin.y] = pathColor[i];
+				}
+				else { // else the y's must be different
+					connVert[move.ptBegin.x][min(move.ptBegin.y, move.ptDest.y)] = "|";
+					connVertColor[move.ptBegin.x][min(move.ptBegin.y, move.ptDest.y)] = pathColor[i];
+				}
 			}
 		}
 	}
 
-	// Start composing return string
-	std::string ret;
-	ret += " ";
+	// Start outputting to console
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	std::cout << " ";
+	SetConsoleTextAttribute(hConsole, pathColor[9]);
 	for (int x = 0; x < m_width * 5 - 0; x++) {
-		ret += "-"; // top border
+		std::cout << "-"; // top border
 	}
-	ret += "\n";
+	std::cout << "\n";
 
 	for (int y = m_height - 1; y >= 0; y--) {
-		ret += "| "; // left border
+		SetConsoleTextAttribute(hConsole, pathColor[9]);
+		std::cout << "| "; // left border
 		for (int x = 0; x < m_width; x++) {
-			ret += board[x][y];
-			if (x < m_width - 1)
-				ret += connHori[x][y];
+			SetConsoleTextAttribute(hConsole, boardColor[x][y]);
+			std::cout << board[x][y];
+			if (x < m_width - 1) {
+				SetConsoleTextAttribute(hConsole, connHoriColor[x][y]);
+				std::cout << connHori[x][y];
+			}
 		}
-		ret += " |"; // right border
-		ret += "\n";
+		SetConsoleTextAttribute(hConsole, pathColor[9]);
+		std::cout << " |"; // right border
+		std::cout << "\n";
 
 		if (y > 0) {
-			ret += "|  "; // left border
+			SetConsoleTextAttribute(hConsole, pathColor[9]);
+			std::cout << "|  "; // left border
 			for (int x = 0; x < m_width; x++) {
-				ret += connVert[x][y - 1];
+				SetConsoleTextAttribute(hConsole, connVertColor[x][y - 1]);
+				std::cout << connVert[x][y - 1];
 				if (x < m_width - 1)
-					ret += "    ";
+					std::cout << "    ";
 			}
-			ret += "  |"; // right border
-			ret += "\n";
+			SetConsoleTextAttribute(hConsole, pathColor[9]);
+			std::cout << "  |"; // right border
+			std::cout << "\n";
 		}
 	}
 
-	ret += " ";
+	std::cout << " ";
+	SetConsoleTextAttribute(hConsole, pathColor[9]);
 	for (int x = 0; x < m_width * 5 - 0; x++) {
-		ret += "-"; // bottom border
+		std::cout << "-"; // bottom border
 	}
-	ret += "\n";
+	std::cout << "\n";
 
-	// Loop through each path
+	// Display each path current / max length
 	for (int i = 0; i < m_path.size(); i++) {
-		ret += std::to_string(m_path[i].getId()) + " = " +
+		SetConsoleTextAttribute(hConsole, pathColor[i]);
+		std::cout << std::to_string(m_path[i].getId()) + " = " +
 			std::to_string(m_path[i].getLength()) + "\/" +
 			std::to_string(m_path[i].getMaxLength());
-		if (i < m_path.size() - 1)
-			ret += " , ";
+		if (i < m_path.size() - 1) {
+			SetConsoleTextAttribute(hConsole, pathColor[9]);
+			std::cout << " , ";
+		}
+			
 	}
-
-	return ret;
+	SetConsoleTextAttribute(hConsole, pathColor[10]); // set back to white after we're done
+	std::cout << "\n";
 }
 
 std::string Connect2::getIdStr()

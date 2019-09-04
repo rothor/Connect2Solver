@@ -30,7 +30,7 @@ public:
 
 	int getPathDisplayId(int pathId);
 	int getPathIdFromDisplayId(int pathDisplayId);
-	std::string getDisplayStr();
+	void getDisplayStr();
 	std::string getIdStr();
 
 protected:
