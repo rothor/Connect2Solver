@@ -395,6 +395,8 @@ void Connect2::getDisplayStr()
 	std::string dirDown = " V ";
 	std::string dirLeft = " < ";
 	std::string dirRight = " > ";
+	std::string connVertStr = "|";
+	std::string connHoriStr = "--";
 	std::string placeholderStr = "???";
 	
 	std::vector<int> pathColor = {
@@ -494,6 +496,7 @@ void Connect2::getDisplayStr()
 			}
 		}
 	}
+
 	// Loop through each path, set connections and path tile colors and connection colors and path arrows
 	for (int i = 0; i < m_path.size(); i++) {
 		Point startPt = m_path[i].getStartPoint();
@@ -527,11 +530,11 @@ void Connect2::getDisplayStr()
 			// Set connection
 			if (!move.isTeleport) {
 				if (move.ptDest.x != move.ptBegin.x) {
-					connHori[min(move.ptBegin.x, move.ptDest.x)][move.ptBegin.y] = "--";
+					connHori[min(move.ptBegin.x, move.ptDest.x)][move.ptBegin.y] = connHoriStr;
 					connHoriColor[min(move.ptBegin.x, move.ptDest.x)][move.ptBegin.y] = pathColor[i];
 				}
 				else { // else the y's must be different
-					connVert[move.ptBegin.x][min(move.ptBegin.y, move.ptDest.y)] = "|";
+					connVert[move.ptBegin.x][min(move.ptBegin.y, move.ptDest.y)] = connVertStr;
 					connVertColor[move.ptBegin.x][min(move.ptBegin.y, move.ptDest.y)] = pathColor[i];
 				}
 			}
@@ -610,14 +613,9 @@ std::string Connect2::getIdStr()
 	return ret;
 }
 
-/* Since this method returns 0 by default, it could lead to unexected behavior
- * when the user inputs a wrong path id (it will operate on m_path[0] then).
- */
 int Connect2::getPathIdFromDisplayId(int pathDisplayId)
 {
 	return pathDisplayId - 1;
-
-	//return 0;
 }
 
 Path& Connect2::getPath(int pathDisplayId)
