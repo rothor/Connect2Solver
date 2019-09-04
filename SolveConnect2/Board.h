@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <memory>
 #include "Tile.h"
 #include "TileNeutral.h"
 #include "TileBlock.h"

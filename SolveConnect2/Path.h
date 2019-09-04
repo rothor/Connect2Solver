@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 #include "Point.h"
 #include "Direction.h"
 #include "PathMove.h"
