@@ -2,53 +2,43 @@
 #include <Windows.h>
 
 
-int IdManager::instanceCount = 1;
-
-IdManager::IdManager(int anInt)
+IdManager::IdManager() :
+	m_dbFileName("hash.sqlite")
 {
-	m_fileName = std::string("hash" + std::to_string(instanceCount++) + ".sqlite");
-	DeleteFileA(m_fileName.c_str());
-	int rc = sqlite3_open(m_fileName.c_str(), &(m_sql.m_sql));
-	std::string stmt = "PRAGMA synchronous = OFF;"; // faster
-	rc = sqlite3_exec(m_sql.m_sql, stmt.c_str(), 0, 0, 0);
-	stmt = "PRAGMA JOURNAL_MODE = OFF;"; // faster
-	rc = sqlite3_exec(m_sql.m_sql, stmt.c_str(), 0, 0, 0);
-	stmt = "CREATE TABLE HashTable(Hash TEXT UNIQUE);";
-	rc = sqlite3_exec(m_sql.m_sql, stmt.c_str(), 0, 0, 0);
+	DeleteFileA(m_dbFileName.c_str()); // delete the database file if it exists
+	sqlite3_open_v2(m_dbFileName.c_str(), &m_conn, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, 0); // open the database
+	std::string stmtStr = "PRAGMA synchronous = OFF"; // faster
+	sqlite3_exec(m_conn, stmtStr.c_str(), 0, 0, 0);
+	stmtStr = "PRAGMA JOURNAL_MODE = OFF"; // faster
+	sqlite3_exec(m_conn, stmtStr.c_str(), 0, 0, 0);
+	stmtStr = "CREATE TABLE Tbl(Hash TEXT UNIQUE)"; // create table
+	sqlite3_exec(m_conn, stmtStr.c_str(), 0, 0, 0);
+	stmtStr = "BEGIN TRANSACTION"; // Begin the transaction. Everything that happens in this database will occur in one single transaction. The transaction ends when this object is destroyed.
+	sqlite3_exec(m_conn, stmtStr.c_str(), 0, 0, 0);
+	stmtStr = "INSERT INTO Tbl (Hash) VALUES (?)"; // prepare the insert statement
+	sqlite3_prepare_v2(m_conn, stmtStr.c_str(), stmtStr.size(), &m_stmt, 0);
 }
 
 IdManager::~IdManager()
 {
-	int rc = sqlite3_close(m_sql.m_sql);
-	DeleteFileA(m_fileName.c_str());
+	sqlite3_finalize(m_stmt); // finalize the statement
+	std::string stmtStr = "END TRANSACTION;"; // end the transaction
+	sqlite3_exec(m_conn, stmtStr.c_str(), 0, 0, 0);
+	sqlite3_close(m_conn); // close the database
+	DeleteFileA(m_dbFileName.c_str()); // delete the database file
 }
 
 bool IdManager::addIdIsUnique(std::string gameId)
 {
-	int rc = sqlite3_bind_text(m_sql.m_stmt, 1, gameId.c_str(), gameId.size(), 0);
-	int result = sqlite3_step(m_sql.m_stmt);
-	rc = sqlite3_clear_bindings(m_sql.m_stmt);
-	rc = sqlite3_reset(m_sql.m_stmt);
+	sqlite3_clear_bindings(m_stmt);
+	sqlite3_reset(m_stmt);
+	sqlite3_bind_text(m_stmt, 1, gameId.c_str(), gameId.size(), 0);
+	int result = sqlite3_step(m_stmt);
 
 	if (result == SQLITE_DONE) // If it successfully inserted
 		return true;
-	else if (result == SQLITE_CONSTRAINT) // If query fails the 'unique' constraint, and thus is not unique
+	else if (result == SQLITE_CONSTRAINT) // If query fails because of the 'unique' constraint, and thus is not unique
 		return false;
-	else // This should probably have better error checking.
+	else // This should never happen. If it does, there's probably something wrong with the program.
 		return false;
-}
-
-void IdManager::beginQuerying()
-{
-	std::string stmt = "BEGIN TRANSACTION;";
-	int rc = sqlite3_exec(m_sql.m_sql, stmt.c_str(), 0, 0, 0);
-	stmt = "INSERT INTO HashTable (Hash) VALUES (?);";
-	rc = sqlite3_prepare_v2(m_sql.m_sql, stmt.c_str(), stmt.size(), &m_sql.m_stmt, 0);
-}
-
-void IdManager::endQuerying()
-{
-	int rc = sqlite3_finalize(m_sql.m_stmt);
-	std::string stmt = "END TRANSACTION;";
-	rc = sqlite3_exec(m_sql.m_sql, stmt.c_str(), 0, 0, 0);
 }

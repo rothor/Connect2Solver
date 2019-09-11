@@ -40,3 +40,23 @@ std::string Misc::formatIntWithCommas(int v)
 	}
 	return ret;
 }
+
+#include <string> // for 'split' function
+#include <sstream> // for 'split' function
+#include <list> // for 'split' function
+#include <iterator> // for 'split' function
+
+template<typename Out>
+void split_tem(const std::string& s, char delim, Out result) {
+	std::stringstream ss(s);
+	std::string item;
+	while (std::getline(ss, item, delim)) {
+		*(result++) = item;
+	}
+}
+
+std::list<std::string> Misc::split(const std::string& s, char delim) {
+	std::list<std::string> elems;
+	split_tem(s, delim, std::back_inserter(elems));
+	return elems;
+}

@@ -1,20 +1,18 @@
 #pragma once
-#include "Sqlite.h"
+#include "sqlite3.h"
 #include <string>
 
 
 class IdManager
 {
 public:
-	IdManager(int anInt = 1);
+	IdManager();
 	~IdManager();
 
 	bool addIdIsUnique(std::string gameId);
-	void beginQuerying();
-	void endQuerying();
 
 protected:
-	Sqlite m_sql;
-	std::string m_fileName;
-	static int instanceCount;
+	sqlite3* m_conn;
+	sqlite3_stmt* m_stmt;
+	std::string m_dbFileName;
 };

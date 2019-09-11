@@ -2,8 +2,6 @@
 #include "SolutionInputManager.h"
 
 
-int RecursionStruct::instanceCount = 1;
-
 RecursionStruct::RecursionStruct(Connect2 game) :
 	game(game),
 	gameStart(game),
@@ -11,10 +9,7 @@ RecursionStruct::RecursionStruct(Connect2 game) :
 	movesEvaluatedValid(0),
 	solutionFound(false),
 	depth(0),
-	numBranches(0),
-	instance(instanceCount++),
-	idManager(instance),
-	gim(instance)
+	numBranches(0)
 {
 	
 }
@@ -32,13 +27,15 @@ std::string RecursionStruct::getDisplayStr()
 {
 	std::string ret;
 	if (solutionFound) {
+		ret += std::to_string(solutionList.size()) + " solution" + (solutionList.size() > 1 ? "s" : "") + " found in " + std::to_string(solutionList.begin()->miArr.size()) + " moves\n";
+		int i = 1;
 		for (auto it = solutionList.begin(); it != solutionList.end(); it++) {
-			ret += "Solution found (" + std::to_string(it->miArr.size()) + " moves):\n";
+			ret += "Solution " + std::to_string(i++) + ":\n";
 			ret += it->getDisplayStr() + "\n";
-			ret += "save string: " + it->getSaveString();
+			ret += "Save string: " + it->getSaveString();
 			if (std::distance(it, solutionList.end()) > 1)
 				ret += "\n\n";
-		}	
+		}
 	}
 	else {
 		ret += "Solution not found.";

@@ -1,4 +1,5 @@
 #include "MoveInput.h"
+#include "Globals.h"
 
 
 MoveInput::MoveInput(int pathId, Direction direction, bool singleStep) :
@@ -19,7 +20,7 @@ MoveInput::MoveInput(std::string saveStr)
 	else if (saveStr.size() == 3) {
 		pathId = std::stoi(saveStr.substr(0, 1));
 		direction = charToDirection(saveStr[1]);
-		if (saveStr[2] == 'o')
+		if (saveStr[2] == Globals::singleMoveChar)
 			singleStep = true;
 		else
 			singleStep = false;
@@ -39,7 +40,7 @@ MoveInput::MoveInput() :
 std::string MoveInput::getSaveStr()
 {
 	if (singleStep)
-		return std::string(std::to_string(pathId) + directionToChar(direction) + 'o');
+		return std::string(std::to_string(pathId) + directionToChar(direction) + Globals::singleMoveChar);
 	else
 		return std::string(std::to_string(pathId) + directionToChar(direction));
 }

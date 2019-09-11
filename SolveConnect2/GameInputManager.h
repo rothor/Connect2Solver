@@ -1,5 +1,5 @@
 #pragma once
-#include "Sqlite.h"
+#include "sqlite3.h"
 #include "GameInput.h"
 #include <string>
 
@@ -7,22 +7,20 @@
 class GameInputManager
 {
 public:
-	GameInputManager(int anInt = 1);
+	GameInputManager();
 	~GameInputManager();
 
 	void getRows();
 	bool nextRow(GameInput& gi);
 	void addGameInput(GameInput& gi);
 	void removePrevGameInputs();
-	void beginQuerying();
-	void endQuerying();
 
 protected:
-	Sqlite sql;
+	sqlite3* m_conn;
+	sqlite3_stmt* m_stmtSelectMax;
+	sqlite3_stmt* m_stmtSelectLess;
 	sqlite3_stmt* m_stmtInsert;
+	sqlite3_stmt* m_stmtDelete;
 	int m_max;
-	bool m_finalized;
-	std::string m_fileName;
-	static int instanceCount;
+	std::string m_dbFileName;
 };
-

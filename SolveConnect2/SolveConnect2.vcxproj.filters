@@ -78,9 +78,6 @@
     <ClCompile Include="GameInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sqlite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SolutionInputManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -105,7 +102,7 @@
     <ClCompile Include="Misc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IdManager2.cpp">
+    <ClCompile Include="Globals.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -170,9 +167,6 @@
     <ClInclude Include="GameInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sqlite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SolutionInputManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -197,11 +191,14 @@
     <ClInclude Include="Misc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IdManager2.h">
+    <ClInclude Include="Globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="sqlite3.dll" />
+    <Library Include="sqlite3x64.lib" />
   </ItemGroup>
 </Project>

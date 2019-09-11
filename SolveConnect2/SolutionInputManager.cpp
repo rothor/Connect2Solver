@@ -36,9 +36,30 @@ void SolutionInputManager::addMove(MoveInput mi)
 	}
 	if (!inserted)
 		m_gi.miArr.push_back(mi);
+
+	auto rit = ++m_gi.miArr.rbegin();
+	for (; rit != m_gi.miArr.rend(); rit++) {
+		if ((*rit).pathId == mi.pathId) {
+			auto rit2 = rit;
+			rit2++;
+			for (; rit2 != m_gi.miArr.rend(); rit2++) {
+				if ((*rit2).pathId != mi.pathId)
+					break;
+			}
+			rit2--;
+			GameInput giCopy = m_gi;
+			m_gi.miArr.splice(--m_gi.miArr.end(), m_gi.miArr, --rit2.base(), rit.base());
+			m_game.reset();
+			m_game.moveAll(m_gi);
+			if (m_game.getIdStr() != hash) {
+				m_gi = giCopy;
+			}
+			break;
+		}
+	}
+	
 	m_game = m_gameStart;
 	m_game.moveAll(m_gi);
-	
 	auto ret = m_mapIdToGi.insert(std::pair<std::string, GameInput>(m_game.getIdStr(), m_gi));
 	if (!ret.second) { // if insert failed
 		m_gi = ret.first->second;

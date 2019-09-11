@@ -22,13 +22,9 @@ void Connect2Solver::solve(Connect2 game)
 		std::cout << "Already solved.\n";
 		return;
 	}
-	rs.idManager.beginQuerying();
 	bool isUnique = rs.idManager.addIdIsUnique(game.getIdStr());
-	rs.idManager.endQuerying();
-	rs.gim.beginQuerying();
 	GameInput giTemp;
 	rs.gim.addGameInput(giTemp);
-	rs.gim.endQuerying();
 
 	#ifdef doBenchmarking
 	std::ofstream out("benchmarks.txt"); // for benchmark file
@@ -105,9 +101,6 @@ void Connect2Solver::solve(Connect2 game)
 
 void Connect2Solver::recurse(RecursionStruct& rs)
 {
-	rs.gim.beginQuerying();
-	rs.idManager.beginQuerying();
-
 	#ifdef doBenchmarking
 	Benchmarker::resetTimer("getRows"); // ## for benchmarking ##
 	#endif
@@ -128,8 +121,8 @@ void Connect2Solver::recurse(RecursionStruct& rs)
 			break;
 		addValidMoves(rs, gi);
 
-		if (rs.solutionFound)
-			break;
+		//if (rs.solutionFound) // uncomment this to stop after the first solution is found
+		//	break;
 	}
 	#ifdef doBenchmarking
 	Benchmarker::resetTimer("rmvPrevInputs"); // ## for benchmarking ##
@@ -138,9 +131,6 @@ void Connect2Solver::recurse(RecursionStruct& rs)
 	#ifdef doBenchmarking
 	Benchmarker::addTime("rmvPrevInputs"); // ## for benchmarking ##
 	#endif
-	
-	rs.gim.endQuerying();
-	rs.idManager.endQuerying();
 }
 
 void Connect2Solver::addValidMoves(RecursionStruct& rs, GameInput& gi)
@@ -160,9 +150,6 @@ void Connect2Solver::addValidMoves(RecursionStruct& rs, GameInput& gi)
 		for (Direction direction : directions) {
 			MoveInput newMi = MoveInput(rs.game.getPathDisplayId(i), direction);
 			addMove(rs, gi, newMi);
-
-			if (rs.solutionFound)
-				return; // We found the solution, so we don't need to do any more computation.
 		}
 	}
 }
@@ -204,13 +191,20 @@ void Connect2Solver::addMove(RecursionStruct& rs, GameInput& gi, MoveInput& mi)
 		#endif
 		return;
 	}
-	
+
 	bool isSolved = rs.game.isSolved();
 	if (isSolved) {
 		rs.solutionFound = true;
 		GameInput solutionGi = gi;
 		solutionGi.miArr.push_back(mi);
 		rs.addSolution(solutionGi);
+		#ifdef doBenchmarking
+		Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
+		#endif
+		rs.game.undo(); // Only undo if the move was valid.
+		#ifdef doBenchmarking
+		Benchmarker::addTime("moveAll"); // ## for benchmarking ##
+		#endif
 		return;
 	}
 
@@ -247,13 +241,9 @@ void Connect2Solver::solveCustom(Connect2 game, std::string endHash)
 		std::cout << "Already solved.\n";
 		return;
 	}
-	rs.idManager.beginQuerying();
 	bool isUnique = rs.idManager.addIdIsUnique(game.getIdStr());
-	rs.idManager.endQuerying();
-	rs.gim.beginQuerying();
 	GameInput giTemp;
 	rs.gim.addGameInput(giTemp);
-	rs.gim.endQuerying();
 
 	#ifdef doBenchmarking
 	std::ofstream out("benchmarks.txt"); // for benchmark file
@@ -329,9 +319,6 @@ void Connect2Solver::solveCustom(Connect2 game, std::string endHash)
 
 void Connect2Solver::recurseCustom(RecursionStruct& rs, std::string& endHash)
 {
-	rs.gim.beginQuerying();
-	rs.idManager.beginQuerying();
-
 	#ifdef doBenchmarking
 	Benchmarker::resetTimer("getRows"); // ## for benchmarking ##
 	#endif
@@ -352,8 +339,8 @@ void Connect2Solver::recurseCustom(RecursionStruct& rs, std::string& endHash)
 			break;
 		addValidMovesCustom(rs, gi, endHash);
 
-		if (rs.solutionFound)
-			break;
+		//if (rs.solutionFound) // uncomment to stop after the first solution is found
+		//	break;
 	}
 	#ifdef doBenchmarking
 	Benchmarker::resetTimer("rmvPrevInputs"); // ## for benchmarking ##
@@ -362,9 +349,6 @@ void Connect2Solver::recurseCustom(RecursionStruct& rs, std::string& endHash)
 	#ifdef doBenchmarking
 	Benchmarker::addTime("rmvPrevInputs"); // ## for benchmarking ##
 	#endif
-
-	rs.gim.endQuerying();
-	rs.idManager.endQuerying();
 }
 
 void Connect2Solver::addValidMovesCustom(RecursionStruct& rs, GameInput& gi, std::string& endHash)
@@ -384,9 +368,6 @@ void Connect2Solver::addValidMovesCustom(RecursionStruct& rs, GameInput& gi, std
 		for (Direction direction : directions) {
 			MoveInput newMi = MoveInput(rs.game.getPathDisplayId(i), direction);
 			addMoveCustom(rs, gi, newMi, endHash);
-
-			if (rs.solutionFound)
-				return; // We found the solution, so we don't need to do any more computation.
 		}
 	}
 }
@@ -435,6 +416,13 @@ void Connect2Solver::addMoveCustom(RecursionStruct& rs, GameInput& gi, MoveInput
 		GameInput solutionGi = gi;
 		solutionGi.miArr.push_back(mi);
 		rs.addSolution(solutionGi);
+		#ifdef doBenchmarking
+		Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
+		#endif
+		rs.game.undo(); // Only undo if the move was valid.
+		#ifdef doBenchmarking
+		Benchmarker::addTime("moveAll"); // ## for benchmarking ##
+		#endif
 		return;
 	}
 
@@ -471,13 +459,9 @@ void Connect2Solver::solveEndState(Connect2 game)
 		std::cout << "Already solved.\n";
 		return;
 	}
-	rs.idManager.beginQuerying();
 	bool isUnique = rs.idManager.addIdIsUnique(game.getIdStr());
-	rs.idManager.endQuerying();
-	rs.gim.beginQuerying();
 	GameInput giTemp;
 	rs.gim.addGameInput(giTemp);
-	rs.gim.endQuerying();
 
 	#ifdef doBenchmarking
 	std::ofstream out("benchmarks.txt"); // for benchmark file
@@ -553,9 +537,6 @@ void Connect2Solver::solveEndState(Connect2 game)
 
 void Connect2Solver::recurseEndState(RecursionStruct& rs)
 {
-	rs.gim.beginQuerying();
-	rs.idManager.beginQuerying();
-
 	#ifdef doBenchmarking
 	Benchmarker::resetTimer("getRows"); // ## for benchmarking ##
 	#endif
@@ -583,9 +564,6 @@ void Connect2Solver::recurseEndState(RecursionStruct& rs)
 	#ifdef doBenchmarking
 	Benchmarker::addTime("rmvPrevInputs"); // ## for benchmarking ##
 	#endif
-
-	rs.gim.endQuerying();
-	rs.idManager.endQuerying();
 }
 
 void Connect2Solver::addValidMovesEndState(RecursionStruct& rs, GameInput& gi)
@@ -671,6 +649,14 @@ void Connect2Solver::addMoveEndState(RecursionStruct& rs, GameInput& gi, MoveInp
 		GameInput solutionGi = gi;
 		solutionGi.miArr.push_back(mi);
 		rs.addSolution(solutionGi);
+		#ifdef doBenchmarking
+		Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
+		#endif
+		rs.game.undo(); // Only undo if the move was valid.
+		#ifdef doBenchmarking
+		Benchmarker::addTime("moveAll"); // ## for benchmarking ##
+		#endif
+		return;
 	}
 
 	gi.miArr.push_back(mi);

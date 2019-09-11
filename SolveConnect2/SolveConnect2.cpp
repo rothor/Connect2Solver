@@ -120,7 +120,7 @@ int main()
 				GameInput gi = sim.getSolution();
 				std::cout << "Current moves: " << std::to_string(gi.miArr.size()) << "\n";
 				std::cout << gi.getDisplayStr() << "\n";
-				std::cout << "Save string:" << gi.getSaveString() << "\n";
+				std::cout << "Save string: " << gi.getSaveString() << "\n";
 			}
 			else if (playSolution) {
 				std::cout << "Playing current moves...\n";
@@ -214,7 +214,6 @@ int main()
 			std::cout << "\n";
 		}
 	}
-	std::cout << "------------------------------------------------\n";
 
 	return 0;
 }

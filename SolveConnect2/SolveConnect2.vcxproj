@@ -158,7 +158,7 @@
     <ClCompile Include="GameInput.cpp" />
     <ClCompile Include="GameInputManager.cpp" />
     <ClCompile Include="Connect2Solver.cpp" />
-    <ClCompile Include="IdManager2.cpp" />
+    <ClCompile Include="Globals.cpp" />
     <ClCompile Include="Misc.cpp" />
     <ClCompile Include="RecursionStruct.cpp" />
     <ClCompile Include="HighResolutionTimer.cpp" />
@@ -172,7 +172,6 @@
     <ClCompile Include="PathMove.cpp" />
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="SolutionInputManager.cpp" />
-    <ClCompile Include="Sqlite.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="TileBlock.cpp" />
     <ClCompile Include="TileEnd.cpp" />
@@ -191,7 +190,7 @@
     <ClInclude Include="GameInput.h" />
     <ClInclude Include="GameInputManager.h" />
     <ClInclude Include="Connect2Solver.h" />
-    <ClInclude Include="IdManager2.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="Misc.h" />
     <ClInclude Include="RecursionStruct.h" />
     <ClInclude Include="HighResolutionTimer.h" />
@@ -205,7 +204,7 @@
     <ClInclude Include="PathMove.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="SolutionInputManager.h" />
-    <ClInclude Include="Sqlite.h" />
+    <ClInclude Include="sqlite3.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="TileBlock.h" />
     <ClInclude Include="TileEnd.h" />
@@ -216,7 +215,7 @@
     <ClInclude Include="Benchmarker.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="sqlite3.dll" />
+    <Library Include="sqlite3x64.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

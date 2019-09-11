@@ -3,7 +3,6 @@
 #include "GameInput.h"
 #include "Connect2.h"
 #include "IdManager.h"
-//#include "IdManager2.h"
 #include "GameInputManager.h"
 
 
@@ -25,8 +24,4 @@ public:
 	int numBranches;
 	IdManager idManager;
 	GameInputManager gim;
-
-protected:
-	int instance;
-	static int instanceCount;
 };
