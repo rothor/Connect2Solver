@@ -1,0 +1,5 @@
+w 6 h 4
+n     n     n     b     n     e1
+n     s1-17 n     b     n     mbl
+n     n     n     n     n     n
+n     mtl   b     b     b     b

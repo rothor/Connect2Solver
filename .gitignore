@@ -1,5 +1,7 @@
 # my added
-*.txt
+levels.txt
+solution.txt
+benchmarks.txt
 *.db
 *.db-journal
 *.sqlite

@@ -1,0 +1,8 @@
+w 11 h 7
+mbr   n     n     n     b     n     n     n     n     b     b
+n     mbr   n     n     n     n     n     n     n     s1-16 b
+n     n     n     n     n     mbr   n     n     n     n     n
+n     n     n     n     n     n     s3-22 n     n     n     n
+e1    e3    n     n     n     n     n     n     n     n     e2
+b     b     n     s2-26 n     n     n     n     n     n     b
+b     b     n     n     n     n     n     n     n     mtl   b

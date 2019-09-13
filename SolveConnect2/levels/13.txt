@@ -1,0 +1,7 @@
+w 8 h 6
+n     n     n     n     n     e2    n     n
+n     p4-1  n     n     s3-21 n     n     n
+n     n     s1-11 n     n     mtl   n     n
+n     n     n     n     e1    n     n     n
+n     n     n     n     n     n     s2-13 n
+n     n     e3    p2-5  n     n     n     n

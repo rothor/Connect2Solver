@@ -1,0 +1,6 @@
+w 8 h 5
+n     n     n     n     n     n     n     s1-19
+n     mbr   n     n     n     n     n     n
+n     n     n     e2    e1    n     n     n
+n     n     n     n     n     n     mtl   n
+s2-19 n     n     n     n     n     n     n

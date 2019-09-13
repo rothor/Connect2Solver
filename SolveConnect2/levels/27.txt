@@ -1,0 +1,8 @@
+w 10 h 7
+b     n     n     n     n     b     s3-11 n     p2-1  b
+p9-1  n     mbr   n     n     e2    n     mbl   n     n
+n     e3    n     mbr   n     n     p7-3  n     n     e1
+n     n     n     n     n     n     n     mtl   n     mbl
+n     n     n     n     n     n     p7-5  mbl   b     n
+n     n     mbl   n     s1-19 n     n     n     n     n
+b     p3-11 n     n     n     s2-31 n     n     p1-6  b

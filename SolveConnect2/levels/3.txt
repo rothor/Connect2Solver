@@ -1,0 +1,5 @@
+w 6 h 4
+p6-4  n     n     b     n     p1-4
+n     n     n     b     n     b
+n     e1    b     s1-18 n     n
+n     n     b     n     n     n

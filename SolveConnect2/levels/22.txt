@@ -1,0 +1,7 @@
+w 8 h 6
+b     b     n     n     n     n     n     b
+n     p4-5  n     p2-5  n     n     n     e1
+n     n     n     b     b     n     n     n
+n     n     n     n     s1-19 n     n     n
+e2    n     n     n     b     n     n     n
+b     n     n     n     b     s2-17 b     b

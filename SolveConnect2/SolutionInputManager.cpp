@@ -5,7 +5,7 @@ SolutionInputManager::SolutionInputManager(Connect2 game) :
 	m_game(game),
 	m_gameStart(game)
 {
-
+	m_mapIdToGi.insert(std::pair<std::string, GameInput>(m_game.getIdStr(), m_gi));
 }
 
 // This expects mi in the form of user input

@@ -1,0 +1,5 @@
+w 6 h 4
+n     n     s2-4  n     n     s1-16
+n     n     n     n     n     n
+n     b     n     n     e2    n
+e1    b     mtr   n     n     n

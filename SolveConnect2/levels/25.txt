@@ -1,0 +1,7 @@
+w 9 h 6
+s1-35 n     n     n     n     mbl   n     n     e1
+n     n     e2    n     p8-5  n     n     p5-5  n
+b     n     n     n     n     n     n     n     n
+b     n     n     n     n     p1-2  s2-10 n     b
+p6-3  n     n     n     n     n     n     n     b
+n     n     b     b     n     n     n     n     b

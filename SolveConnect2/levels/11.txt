@@ -1,0 +1,5 @@
+w 6 h 4
+b     b     e2    n     n     p1-1
+s2-9  n     n     n     n     n
+n     n     n     n     e1    n
+p6-4  n     n     n     n     s1-11

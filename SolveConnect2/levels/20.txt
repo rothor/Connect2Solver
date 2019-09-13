@@ -1,0 +1,7 @@
+w 9 h 6
+n     n     n     n     n     n     n     n     mbl
+n     mtr   n     n     n     n     p6-2  n     n
+n     n     n     n     mbl   n     n     n     n
+n     e2    n     s1-23 n     n     mtl   n     n
+n     s2-26 n     n     n     p7-5  n     n     b
+mtr   n     n     n     n     n     e1    b     b

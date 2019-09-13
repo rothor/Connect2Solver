@@ -1,0 +1,7 @@
+w 6 h 6
+n     n     e1    n     n     p1-5
+p6-6  n     n     n     n     p1-4
+p6-5  n     n     n     n     p1-3
+p6-4  n     n     n     n     p1-2
+p6-3  n     mtr   n     n     p1-1
+p6-2  n     n     n     n     s1-35

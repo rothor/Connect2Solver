@@ -1,0 +1,9 @@
+w 12 h 8
+n     n     n     n     n     n     mbl   n     n     b     n     n
+n     b     b     n     n     n     n     n     n     n     n     n
+n     n     s1-23 n     n     n     p6-3  n     n     s2-19 b     p12-3
+n     n     n     mtl   n     n     n     n     n     n     n     n
+n     n     n     n     n     n     n     n     n     e1    n     mtl
+n     n     s3-45 b     n     p7-6  n     n     n     e2    n     p12-6
+n     n     n     b     n     n     n     n     n     e3    n     n
+n     n     n     n     n     n     n     n     n     n     n     mtl
