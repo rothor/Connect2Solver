@@ -169,6 +169,22 @@ void Connect2Solver::addMove(RecursionStruct& rs, GameInput& gi, MoveInput& mi)
 		return;
 	rs.movesEvaluatedValid++; // for display
 
+	bool isSolved = rs.game.isSolved();
+	if (isSolved) {
+		rs.solutionFound = true;
+		GameInput solutionGi = gi;
+		solutionGi.miArr.push_back(mi);
+		rs.addSolution(solutionGi);
+		#ifdef doBenchmarking
+		Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
+		#endif
+		rs.game.undo(); // Only undo if the move was valid.
+		#ifdef doBenchmarking
+		Benchmarker::addTime("moveAll"); // ## for benchmarking ##
+		#endif
+		return;
+	}
+
 	#ifdef doBenchmarking
 	Benchmarker::resetTimer("getGameId"); // ## for benchmarking ##
 	#endif
@@ -182,22 +198,6 @@ void Connect2Solver::addMove(RecursionStruct& rs, GameInput& gi, MoveInput& mi)
 	Benchmarker::addTime("idIsUnique"); // ## for benchmarking ##
 	#endif
 	if (!isUnique) { // If game id already exists
-		#ifdef doBenchmarking
-		Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
-		#endif
-		rs.game.undo(); // Only undo if the move was valid.
-		#ifdef doBenchmarking
-		Benchmarker::addTime("moveAll"); // ## for benchmarking ##
-		#endif
-		return;
-	}
-
-	bool isSolved = rs.game.isSolved();
-	if (isSolved) {
-		rs.solutionFound = true;
-		GameInput solutionGi = gi;
-		solutionGi.miArr.push_back(mi);
-		rs.addSolution(solutionGi);
 		#ifdef doBenchmarking
 		Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
 		#endif
@@ -387,6 +387,22 @@ void Connect2Solver::addMoveCustom(RecursionStruct& rs, GameInput& gi, MoveInput
 		return;
 	rs.movesEvaluatedValid++; // for display
 
+	bool isSolved = rs.game.getIdStr() == endHash;
+	if (isSolved) {
+		rs.solutionFound = true;
+		GameInput solutionGi = gi;
+		solutionGi.miArr.push_back(mi);
+		rs.addSolution(solutionGi);
+		#ifdef doBenchmarking
+		Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
+		#endif
+		rs.game.undo(); // Only undo if the move was valid.
+		#ifdef doBenchmarking
+		Benchmarker::addTime("moveAll"); // ## for benchmarking ##
+		#endif
+		return;
+	}
+
 	#ifdef doBenchmarking
 	Benchmarker::resetTimer("getGameId"); // ## for benchmarking ##
 	#endif
@@ -400,22 +416,6 @@ void Connect2Solver::addMoveCustom(RecursionStruct& rs, GameInput& gi, MoveInput
 	Benchmarker::addTime("idIsUnique"); // ## for benchmarking ##
 	#endif
 	if (!isUnique) { // If game id already exists
-		#ifdef doBenchmarking
-		Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
-		#endif
-		rs.game.undo(); // Only undo if the move was valid.
-		#ifdef doBenchmarking
-		Benchmarker::addTime("moveAll"); // ## for benchmarking ##
-		#endif
-		return;
-	}
-
-	bool isSolved = rs.game.getIdStr() == endHash;
-	if (isSolved) {
-		rs.solutionFound = true;
-		GameInput solutionGi = gi;
-		solutionGi.miArr.push_back(mi);
-		rs.addSolution(solutionGi);
 		#ifdef doBenchmarking
 		Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
 		#endif

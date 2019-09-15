@@ -20,7 +20,14 @@ void RecursionStruct::addSolution(GameInput gi)
 	for (auto moveIt = gi.miArr.begin(); moveIt != gi.miArr.end(); moveIt++) {
 		sim.addMove(*moveIt);
 	}
-	solutionList.push_back(sim.getSolution());
+	// Check that new solution isn't the same as any of the current solutions
+	GameInput newGi = sim.getSolution();
+	for (auto solution : solutionList) {
+		if (newGi.getSaveString() == solution.getSaveString())
+			return;
+	}
+	// If not, add solution
+	solutionList.push_back(newGi);
 }
 
 std::string RecursionStruct::getDisplayStr()
