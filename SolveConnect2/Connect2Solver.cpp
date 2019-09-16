@@ -618,29 +618,6 @@ void Connect2Solver::addMoveEndState(RecursionStruct& rs, GameInput& gi, MoveInp
 
 	rs.movesEvaluatedValid++; // for display
 
-	#ifdef doBenchmarking
-	Benchmarker::resetTimer("getGameId"); // ## for benchmarking ##
-	#endif
-	std::string id = rs.game.getIdStr();
-	#ifdef doBenchmarking
-	Benchmarker::addTime("getGameId"); // ## for benchmarking ##
-	Benchmarker::resetTimer("idIsUnique"); // ## for benchmarking ##
-	#endif
-	bool isUnique = rs.idManager->addIdIsUnique(id);
-	#ifdef doBenchmarking
-	Benchmarker::addTime("idIsUnique"); // ## for benchmarking ##
-	#endif
-	if (!isUnique) { // If game id already exists
-		#ifdef doBenchmarking
-		Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
-		#endif
-		rs.game.undo(); // Only undo if the move was valid.
-		#ifdef doBenchmarking
-		Benchmarker::addTime("moveAll"); // ## for benchmarking ##
-		#endif
-		return;
-	}
-
 	bool isSolved = rs.game.isSolved();
 	if (isSolved) {
 		rs.solutionFound = true;
