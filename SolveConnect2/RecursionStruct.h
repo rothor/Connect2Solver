@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <memory>
 #include "GameInput.h"
 #include "Connect2.h"
 #include "IdManager.h"
@@ -22,6 +23,6 @@ public:
 	std::list<GameInput> solutionList;
 	int depth;
 	int numBranches;
-	IdManager idManager;
+	std::unique_ptr<IdManager> idManager;
 	GameInputManager gim;
 };

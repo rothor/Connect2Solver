@@ -5,24 +5,20 @@
 #include <iostream>
 #include <fstream>
 
-//#define doBenchmarking
-#ifdef doBenchmarking
+#define doBenchmarking
 #include "Benchmarker.h"
-#endif
 
 
 void Connect2Solver::solve(Connect2 game)
 {
-	#ifdef doBenchmarking
 	Benchmarker::clearAllTimes(); // ## for benchmarking ##
 	Benchmarker::resetTimer("TotalTime"); // ## for benchmarking ##
-	#endif
 	RecursionStruct rs(game);
 	if (game.isSolved()) {
 		std::cout << "Already solved.\n";
 		return;
 	}
-	bool isUnique = rs.idManager.addIdIsUnique(game.getIdStr());
+	bool isUnique = rs.idManager->addIdIsUnique(game.getIdStr());
 	GameInput giTemp;
 	rs.gim.addGameInput(giTemp);
 
@@ -95,7 +91,9 @@ void Connect2Solver::solve(Connect2 game)
 
 	std::ofstream outSolution("solution.txt"); // for solution file
 	outSolution.clear(); // for solution file
-	outSolution << rs.getDisplayStr(); // for solution file
+	outSolution << rs.getDisplayStr() << "\n\n"; // for solution file
+	Benchmarker::addTime("TotalTime");
+	outSolution << "Time: " << Benchmarker::getStr("TotalTime"); // for solution file
 	outSolution.close(); // for solution file
 }
 
@@ -193,7 +191,7 @@ void Connect2Solver::addMove(RecursionStruct& rs, GameInput& gi, MoveInput& mi)
 	Benchmarker::addTime("getGameId"); // ## for benchmarking ##
 	Benchmarker::resetTimer("idIsUnique"); // ## for benchmarking ##
 	#endif
-	bool isUnique = rs.idManager.addIdIsUnique(id);
+	bool isUnique = rs.idManager->addIdIsUnique(id);
 	#ifdef doBenchmarking
 	Benchmarker::addTime("idIsUnique"); // ## for benchmarking ##
 	#endif
@@ -241,7 +239,7 @@ void Connect2Solver::solveCustom(Connect2 game, std::string endHash)
 		std::cout << "Already solved.\n";
 		return;
 	}
-	bool isUnique = rs.idManager.addIdIsUnique(game.getIdStr());
+	bool isUnique = rs.idManager->addIdIsUnique(game.getIdStr());
 	GameInput giTemp;
 	rs.gim.addGameInput(giTemp);
 
@@ -411,7 +409,7 @@ void Connect2Solver::addMoveCustom(RecursionStruct& rs, GameInput& gi, MoveInput
 	Benchmarker::addTime("getGameId"); // ## for benchmarking ##
 	Benchmarker::resetTimer("idIsUnique"); // ## for benchmarking ##
 	#endif
-	bool isUnique = rs.idManager.addIdIsUnique(id);
+	bool isUnique = rs.idManager->addIdIsUnique(id);
 	#ifdef doBenchmarking
 	Benchmarker::addTime("idIsUnique"); // ## for benchmarking ##
 	#endif
@@ -459,7 +457,7 @@ void Connect2Solver::solveEndState(Connect2 game)
 		std::cout << "Already solved.\n";
 		return;
 	}
-	bool isUnique = rs.idManager.addIdIsUnique(game.getIdStr());
+	bool isUnique = rs.idManager->addIdIsUnique(game.getIdStr());
 	GameInput giTemp;
 	rs.gim.addGameInput(giTemp);
 
@@ -628,7 +626,7 @@ void Connect2Solver::addMoveEndState(RecursionStruct& rs, GameInput& gi, MoveInp
 	Benchmarker::addTime("getGameId"); // ## for benchmarking ##
 	Benchmarker::resetTimer("idIsUnique"); // ## for benchmarking ##
 	#endif
-	bool isUnique = rs.idManager.addIdIsUnique(id);
+	bool isUnique = rs.idManager->addIdIsUnique(id);
 	#ifdef doBenchmarking
 	Benchmarker::addTime("idIsUnique"); // ## for benchmarking ##
 	#endif

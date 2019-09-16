@@ -1,5 +1,7 @@
 #include "RecursionStruct.h"
 #include "SolutionInputManager.h"
+#include "IdManagerSqlite.h"
+#include "IdManagerMemory.h"
 
 
 RecursionStruct::RecursionStruct(Connect2 game) :
@@ -11,7 +13,9 @@ RecursionStruct::RecursionStruct(Connect2 game) :
 	depth(0),
 	numBranches(0)
 {
-	
+	idManager = std::unique_ptr<IdManager>{
+		new IdManagerMemory()
+	};
 }
 
 void RecursionStruct::addSolution(GameInput gi)

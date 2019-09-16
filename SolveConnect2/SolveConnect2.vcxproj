@@ -159,10 +159,12 @@
     <ClCompile Include="GameInputManager.cpp" />
     <ClCompile Include="Connect2Solver.cpp" />
     <ClCompile Include="Globals.cpp" />
+    <ClCompile Include="IdManager.cpp" />
+    <ClCompile Include="IdManagerMemory.cpp" />
+    <ClCompile Include="IdManagerSqlite.cpp" />
     <ClCompile Include="Misc.cpp" />
     <ClCompile Include="RecursionStruct.cpp" />
     <ClCompile Include="HighResolutionTimer.cpp" />
-    <ClCompile Include="IdManager.cpp" />
     <ClCompile Include="MoveInput.cpp" />
     <ClCompile Include="MoveInstructionsEnter.cpp" />
     <ClCompile Include="MoveInstructionsExit.cpp" />
@@ -191,10 +193,12 @@
     <ClInclude Include="GameInputManager.h" />
     <ClInclude Include="Connect2Solver.h" />
     <ClInclude Include="Globals.h" />
+    <ClInclude Include="IdManager.h" />
+    <ClInclude Include="IdManagerMemory.h" />
+    <ClInclude Include="IdManagerSqlite.h" />
     <ClInclude Include="Misc.h" />
     <ClInclude Include="RecursionStruct.h" />
     <ClInclude Include="HighResolutionTimer.h" />
-    <ClInclude Include="IdManager.h" />
     <ClInclude Include="MoveInput.h" />
     <ClInclude Include="MoveInstructionsEnter.h" />
     <ClInclude Include="MoveInstructionsExit.h" />
