@@ -11,9 +11,10 @@ class Recursor
 {
 public:
 	Recursor() = delete;
-	static bool recurse(RecursionStruct& rs, std::shared_ptr<NodeInterface>& node, bool first = true);
+	static void addNextInputs(RecursionStruct& rs);
 
 protected:
+	static bool recurse(RecursionStruct& rs, std::shared_ptr<NodeInterface>& node, bool first = false);
 	static bool addValidMoves(RecursionStruct& rs, std::shared_ptr<NodeInterface>& node);
 	static bool addMove(RecursionStruct& rs, std::shared_ptr<NodeInterface>& node, MoveInput& mi);
 };

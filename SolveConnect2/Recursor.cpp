@@ -1,6 +1,12 @@
 #include "Recursor.h"
 
 
+void Recursor::addNextInputs(RecursionStruct& rs)
+{
+	auto node = rs.mit->getStartNode();
+	recurse(rs, node, true);
+}
+
 bool Recursor::recurse(RecursionStruct& rs, std::shared_ptr<NodeInterface>& node, bool first)
 {
 	if (!first)
@@ -13,7 +19,7 @@ bool Recursor::recurse(RecursionStruct& rs, std::shared_ptr<NodeInterface>& node
 	}
 	else {
 		for (auto it = childNodes.begin(); it != childNodes.end(); ) {
-			bool nextNodeHasValidBranches = recurse(rs, *it, false);
+			bool nextNodeHasValidBranches = recurse(rs, *it);
 			if (!nextNodeHasValidBranches) {
 				(*it)->deleteThisNode();
 				it = childNodes.erase(it);

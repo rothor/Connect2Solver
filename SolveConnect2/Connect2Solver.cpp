@@ -20,7 +20,6 @@ void Connect2Solver::solve(Connect2 game, SolveOptions options)
 	Benchmarker::clearAllTimes();
 	Benchmarker::resetTimer("TotalTime");
 	
-	auto node = rs.mit->getStartNode();
 	bool isUnique = rs.idManager->addIdIsUnique(game.getIdStr());
 	std::cout << Misc::padStr("Depth", 6) << Misc::padStr("Paths", 15) << Misc::padStr("Evaluated", 17) << "\n";
 
@@ -43,7 +42,7 @@ void Connect2Solver::solve(Connect2 game, SolveOptions options)
 		Benchmarker::clearTime("recurse"); // ## for benchmarking ##
 		Benchmarker::resetTimer("recurse"); // ## for benchmarking ##
 		#endif
-		Recursor::recurse(rs, node);
+		Recursor::addNextInputs(rs);
 		#ifdef doBenchmarking
 		Benchmarker::addTime("recurse"); // ## for benchmarking ##
 		#endif

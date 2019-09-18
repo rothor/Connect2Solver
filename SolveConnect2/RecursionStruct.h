@@ -7,6 +7,7 @@
 #include "MoveInputTree.h"
 #include "SolvedInterface.h"
 #include "SolveOptions.h"
+#include "NodeInterface.h"
 
 
 class RecursionStruct
