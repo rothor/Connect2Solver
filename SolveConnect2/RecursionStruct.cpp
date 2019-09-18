@@ -2,20 +2,54 @@
 #include "SolutionInputManager.h"
 #include "IdManagerSqlite.h"
 #include "IdManagerMemory.h"
+#include "MoveInputTreeMemory.h"
+#include "MoveInputTreeSqlite.h"
+#include "SolvedInterfaceComplete.h"
+#include "SolvedInterfaceHash.h"
 
 
-RecursionStruct::RecursionStruct(Connect2 game) :
+RecursionStruct::RecursionStruct(Connect2 game, SolveOptions so) :
 	game(game),
 	gameStart(game),
 	movesEvaluated(0),
 	movesEvaluatedValid(0),
 	solutionFound(false),
 	depth(0),
-	numBranches(0)
+	numBranches(0),
+	solveEndPos(so.solveEndPos)
 {
-	idManager = std::unique_ptr<IdManager>{
-		new IdManagerMemory()
-	};
+	if (so.hashtableInSqlite) {
+		idManager = std::unique_ptr<IdManager>{
+			new IdManagerSqlite()
+		};
+	}
+	else {
+		idManager = std::unique_ptr<IdManager>{
+			new IdManagerMemory()
+		};
+	}
+	
+	if (so.treeInSqlite) {
+		mit = std::unique_ptr<MoveInputTree>{
+			new MoveInputTreeSqlite()
+		};
+	}
+	else {
+		mit = std::unique_ptr<MoveInputTree>{
+			new MoveInputTreeMemory()
+		};
+	}
+	
+	if (so.solveToPos) {
+		si = std::unique_ptr<SolvedInterface>{
+			new SolvedInterfaceHash(so.endHash)
+		};
+	}
+	else {
+		si = std::unique_ptr<SolvedInterface>{
+			new SolvedInterfaceComplete()
+		};
+	}
 }
 
 void RecursionStruct::addSolution(GameInput gi)

@@ -3,12 +3,17 @@
 #include <sstream>
 #include <Windows.h>
 #include <fstream>
+#include <list>
 #include "Connect2.h"
 #include "Direction.h"
 #include "MoveInput.h"
 #include "SolutionInputManager.h"
 #include "Connect2Solver.h"
+#include "SolveOptions.h"
+#include "Misc.h"
 
+
+//#define doBenchmarking
 
 int main()
 {
@@ -29,6 +34,7 @@ int main()
 	char charLoadGameInput = 'k';
 	char charResetSolution = 'j';
 	char charSolveEndState = 'y';
+	std::string charSqlite = "l";
 
 	std::string fileName = "level.txt";
 
@@ -64,29 +70,45 @@ int main()
 		bool help = false;
 		bool loadLevel = false;
 		bool quit = false;
-		if (input.size() == 1) {
+		bool sqliteHashtable = false;
+		bool sqliteTree = false;
+		if (input.size() == 0) {
+			invalid = true;
+		}
+		else if (input[0] == charSolve || input[0] == charSolveToCurrent || input[0] == charSolveFromCurrent || input[0] == charSolveEndState) {
+			if (input[0] == charSolve)
+				solve = true;
+			else if (input[0] == charSolveToCurrent)
+				solveToCurrentPos = true;
+			else if (input[0] == charSolveFromCurrent)
+				solveFromCurrentPos = true;
+			else if (input[0] == charSolveEndState)
+				solveEndState = true;
+			std::list<std::string> parts = Misc::split(input, ' ');
+			int i = 1;
+			for (auto it = parts.begin(); it != parts.end(); it++) {
+				if (i == 2 && (*it) == charSqlite)
+					sqliteHashtable = true;
+				if (i == 3 && (*it) == charSqlite)
+					sqliteTree = true;
+				i++;
+			}
+		}
+		else if (input.size() == 1) {
 			if (input[0] == charReset)
 				reset = true;
 			else if (input[0] == charDisplaySolution)
 				displaySolution = true;
 			else if (input[0] == charPlaySolution)
 				playSolution = true;
-			else if (input[0] == charSolve)
-				solve = true;
 			else if (input[0] == charReload)
 				reload = true;
 			else if (input[0] == charSave)
 				saveGame = true;
-			else if (input[0] == charSolveToCurrent)
-				solveToCurrentPos = true;
-			else if (input[0] == charSolveFromCurrent)
-				solveFromCurrentPos = true;
 			else if (input[0] == charLoad)
 				loadGame = true;
 			else if (input[0] == charResetSolution)
 				resetSolution = true;
-			else if (input[0] == charSolveEndState)
-				solveEndState = true;
 			else
 				invalid = true;
 		}
@@ -144,7 +166,8 @@ int main()
 		}
 		else if (solve) {
 			std::cout << "Solving...\n";
-			Connect2Solver::solve(game);
+			SolveOptions so(sqliteHashtable, sqliteTree, solveEndState, solveToCurrentPos || solveFromCurrentPos);
+			Connect2Solver::solve(game, so);
 		}
 		else if (reload) {
 			game = Connect2(fileName);
@@ -165,11 +188,13 @@ int main()
 		}
 		else if (solveToCurrentPos) {
 			std::cout << "Solving from saved state to current state...\n";
-			Connect2Solver::solveCustom(gameSave, game.getIdStr());
+			SolveOptions so(sqliteHashtable, sqliteTree, solveEndState, solveToCurrentPos || solveFromCurrentPos, game.getIdStr());
+			Connect2Solver::solve(gameSave, so);
 		}
 		else if (solveFromCurrentPos) {
 			std::cout << "Solving from current state to saved state...\n";
-			Connect2Solver::solveCustom(game, gameSave.getIdStr());
+			SolveOptions so(sqliteHashtable, sqliteTree, solveEndState, solveToCurrentPos || solveFromCurrentPos, gameSave.getIdStr());
+			Connect2Solver::solve(game, so);
 		}
 		else if (loadGameInput) {
 			std::string giStr = input.substr(2);
@@ -186,7 +211,8 @@ int main()
 		}
 		else if (solveEndState) {
 			std::cout << "Solving end state...\n";
-			Connect2Solver::solveEndState(game);
+			SolveOptions so(sqliteHashtable, sqliteTree, solveEndState, solveToCurrentPos || solveFromCurrentPos);
+			Connect2Solver::solve(game, so);
 		}
 		else if (move) {
 			bool singleStep = input.size() == 3 && input[2] == charSingleStep;
