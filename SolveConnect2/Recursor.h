@@ -2,19 +2,49 @@
 #include <memory>
 #include <list>
 #include <string>
-#include "MoveInput.h"
-#include "RecursionStruct.h"
+#include "GameInput.h"
+#include "Connect2.h"
+#include "IdManager.h"
+#include "MoveInputTree.h"
+#include "SolvedInterface.h"
+#include "SolveOptions.h"
 #include "NodeInterface.h"
 
 
 class Recursor
 {
 public:
-	Recursor() = delete;
-	static void addNextInputs(RecursionStruct& rs);
+	Recursor(Connect2 game, SolveOptions so);
+	void addNextInputs();
+	std::string getDisplayStr();
+	bool isSolved();
+	bool solutionWasFound();
+	int getNumBranches();
+	int getNumMovesEvaluated();
+	int getNumMovesEvaluatedValid();
+	int getNumMovesEvaluatedUnique();
+	int getDepth();
 
 protected:
-	static bool recurse(RecursionStruct& rs, std::shared_ptr<NodeInterface>& node, bool first = false);
-	static bool addValidMoves(RecursionStruct& rs, std::shared_ptr<NodeInterface>& node);
-	static bool addMove(RecursionStruct& rs, std::shared_ptr<NodeInterface>& node, MoveInput& mi);
+	bool recurse(std::shared_ptr<NodeInterface>& node, bool first = false);
+	bool addValidMoves(std::shared_ptr<NodeInterface>& node);
+	bool addMove(std::shared_ptr<NodeInterface>& node, MoveInput& mi);
+	void addSolution(GameInput gi);
+
+protected:
+	Connect2 m_game;
+	Connect2 m_gameStart;
+	bool m_solutionFound;
+	std::list<GameInput> m_solutionList;
+	std::unique_ptr<IdManager> m_idManager;
+	GameInput m_gi;
+	std::unique_ptr<MoveInputTree> m_mit;
+	std::unique_ptr<SolvedInterface> m_si;
+	bool m_solveEndPos;
+
+	int m_movesEvaluated;
+	int m_movesEvaluatedValid;
+	int m_movesEvaluatedUnique;
+	int m_depth;
+	int m_numBranches;
 };

@@ -41,6 +41,11 @@ std::string Misc::formatIntWithCommas(int v)
 	return ret;
 }
 
+std::string Misc::formatDoubleAsPercent(double d)
+{
+	return std::to_string(d * 100).substr(0, 5) + "%";
+}
+
 #include <string> // for 'split' function
 #include <sstream> // for 'split' function
 #include <list> // for 'split' function
