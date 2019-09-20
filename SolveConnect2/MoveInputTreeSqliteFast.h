@@ -6,11 +6,11 @@
 #include <string>
 
 
-class MoveInputTreeSqlite : public MoveInputTree
+class MoveInputTreeSqliteFast : public MoveInputTree
 {
 public:
-	MoveInputTreeSqlite();
-	~MoveInputTreeSqlite();
+	MoveInputTreeSqliteFast();
+	~MoveInputTreeSqliteFast();
 	std::shared_ptr<NodeInterface> getStartNode();
 
 protected:
@@ -19,4 +19,5 @@ protected:
 	sqlite3_stmt* m_stmtSelectChildren;
 	sqlite3_stmt* m_stmtAddChild;
 	sqlite3_stmt* m_stmtDelete;
+	sqlite3_stmt* m_stmtGetMax;
 };

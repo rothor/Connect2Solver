@@ -1,15 +1,15 @@
 #pragma once
 #include <list>
 #include <memory>
-#include "MoveInput.h"
+#include "GameInput.h"
 
 
 class NodeInterface
 {
 public:
 	NodeInterface();
-	virtual std::list<std::shared_ptr<NodeInterface>> getChildren() = 0;
+	virtual bool getNextChild(std::shared_ptr<NodeInterface>& node) = 0;
 	virtual void addChild(MoveInput mi) = 0;
-	virtual void deleteThisNode() = 0;
-	virtual MoveInput getMoveInput() = 0;
+	virtual void deleteCurrentChild() = 0;
+	virtual GameInput getGameInput() = 0;
 };

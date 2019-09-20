@@ -4,6 +4,7 @@
 #include "IdManagerMemory.h"
 #include "MoveInputTreeMemory.h"
 #include "MoveInputTreeSqlite.h"
+#include "MoveInputTreeSqliteFast.h"
 #include "SolvedInterfaceComplete.h"
 #include "SolvedInterfaceHash.h"
 
@@ -32,7 +33,7 @@ Recursor::Recursor(Connect2 game, SolveOptions so) :
 
 	if (so.treeInSqlite) {
 		m_mit = std::unique_ptr<MoveInputTree>{
-			new MoveInputTreeSqlite()
+			new MoveInputTreeSqliteFast()
 		};
 	}
 	else {
@@ -59,40 +60,46 @@ void Recursor::addNextInputs()
 {
 	m_numBranches = 0;
 	auto node = m_mit->getStartNode();
-	recurse(node, true);
+	recurse(&*node, true);
 	m_depth++;
 }
 
-bool Recursor::recurse(std::shared_ptr<NodeInterface>& node, bool first)
+bool Recursor::recurse(NodeInterface* node, bool first)
 {
-	if (!first)
-		m_gi.miArr.push_back(node->getMoveInput());
+	std::list<MoveInput>::iterator it;
+	if (!first) {
+		GameInput gi = node->getGameInput();
+		it = m_gi.miArr.insert(m_gi.miArr.end(), gi.miArr.begin(), gi.miArr.end());
+	}
 
-	std::list<std::shared_ptr<NodeInterface>> childNodes = node->getChildren();
+	int childCountBefore = 0;
+	int childCountAfter = 0;
+	std::shared_ptr<NodeInterface> childNode;
+	while (node->getNextChild(childNode)) {
+		childCountBefore++;
+		childCountAfter++;
+		bool nextNodeHasValidBranches = recurse(&*childNode);
+		if (!nextNodeHasValidBranches) {
+			node->deleteCurrentChild();
+			childCountAfter--;
+		}
+	}
+
 	bool thisNodeHasValidBranches = false;
-	if (childNodes.size() == 0) {
+	if (childCountBefore == 0) {
 		thisNodeHasValidBranches = addValidMoves(node);
 	}
 	else {
-		for (auto it = childNodes.begin(); it != childNodes.end(); ) {
-			bool nextNodeHasValidBranches = recurse(*it);
-			if (!nextNodeHasValidBranches) {
-				(*it)->deleteThisNode();
-				it = childNodes.erase(it);
-			}
-			else
-				it++;
-		}
-		thisNodeHasValidBranches = childNodes.size() > 0;
+		thisNodeHasValidBranches = childCountAfter > 0;
 	}
 
 	if (!first)
-		m_gi.miArr.pop_back();
+		m_gi.miArr.erase(it, m_gi.miArr.end());
 	
 	return thisNodeHasValidBranches;
 }
 
-bool Recursor::addValidMoves(std::shared_ptr<NodeInterface>& node)
+bool Recursor::addValidMoves(NodeInterface* node)
 {
 	#ifdef doBenchmarking
 	Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
@@ -136,7 +143,7 @@ bool Recursor::addValidMoves(std::shared_ptr<NodeInterface>& node)
 	return movesWereAdded;
 }
 
-bool Recursor::addMove(std::shared_ptr<NodeInterface>& node, MoveInput& mi)
+bool Recursor::addMove(NodeInterface* node, MoveInput& mi)
 {
 	m_movesEvaluated++;
 	bool moveAdded = false;

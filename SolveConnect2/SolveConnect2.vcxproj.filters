@@ -90,9 +90,6 @@
     <ClCompile Include="Connect2Solver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RecursionStruct.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Benchmarker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -145,6 +142,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SolveOptions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveInputTreeSqliteFast.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeInterfaceSqliteFast.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -221,9 +224,6 @@
     <ClInclude Include="Connect2Solver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RecursionStruct.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Benchmarker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -279,6 +279,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SolveOptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveInputTreeSqliteFast.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeInterfaceSqliteFast.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

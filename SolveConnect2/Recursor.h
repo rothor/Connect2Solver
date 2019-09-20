@@ -26,9 +26,9 @@ public:
 	int getDepth();
 
 protected:
-	bool recurse(std::shared_ptr<NodeInterface>& node, bool first = false);
-	bool addValidMoves(std::shared_ptr<NodeInterface>& node);
-	bool addMove(std::shared_ptr<NodeInterface>& node, MoveInput& mi);
+	bool recurse(NodeInterface* node, bool first = false);
+	bool addValidMoves(NodeInterface* node);
+	bool addMove(NodeInterface* node, MoveInput& mi);
 	void addSolution(GameInput gi);
 
 protected:

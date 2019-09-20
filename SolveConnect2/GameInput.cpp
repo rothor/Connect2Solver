@@ -8,12 +8,17 @@ GameInput::GameInput()
 
 }
 
-GameInput::GameInput(std::string saveString)
+GameInput::GameInput(const std::string& saveString)
 {
 	std::list<std::string> miStrArr = Misc::split(saveString, ' ');
 	for (auto miStr : miStrArr) {
 		miArr.push_back(MoveInput(miStr));
 	}
+}
+
+GameInput::GameInput(const MoveInput& mi)
+{
+	miArr.push_back(mi);
 }
 
 std::string GameInput::getDisplayStr()
@@ -40,11 +45,25 @@ std::string GameInput::getDisplayStr()
 std::string GameInput::getSaveString()
 {
 	std::string ret;
+	bool first = true;
 	for (auto iter = miArr.begin(); iter != miArr.end(); iter++) {
-		ret += (*iter).getSaveStr();
-		if (++iter != miArr.end())
+		if (first)
+			first = false;
+		else
 			ret += " ";
-		iter--;
+		ret += (*iter).getSaveStr();
 	}
 	return ret;
+}
+
+void GameInput::append(const GameInput& gi)
+{
+	for (auto it = gi.miArr.begin(); it != gi.miArr.end(); ++it) {
+		miArr.push_back(*it);
+	}
+}
+
+void GameInput::append(const MoveInput& mi)
+{
+	miArr.push_back(mi);
 }

@@ -94,6 +94,6 @@ void Connect2Solver::solve(Connect2 game, SolveOptions options)
 	outSolution.clear(); // for solution file
 	outSolution << tr.getDisplayStr() << "\n\n"; // for solution file
 	Benchmarker::addTime("TotalTime");
-	outSolution << "Time: " << Benchmarker::getStr("TotalTime"); // for solution file
+	outSolution << Benchmarker::getStr("TotalTime"); // for solution file
 	outSolution.close(); // for solution file
 }

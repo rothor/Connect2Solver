@@ -1,5 +1,4 @@
 #pragma once
-#include "RecursionStruct.h"
 #include "Connect2.h"
 #include "SolveOptions.h"
 

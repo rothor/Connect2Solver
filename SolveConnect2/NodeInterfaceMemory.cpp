@@ -3,7 +3,9 @@
 
 NodeInterfaceMemory::NodeInterfaceMemory(std::shared_ptr<MoveInputTreeMemoryNode> node, std::shared_ptr<MoveInputTreeMemoryNode> parentNode) :
 	m_node(node),
-	m_parentNode(parentNode)
+	m_parentNode(parentNode),
+	m_itInitialized(false),
+	m_deleted(false)
 {
 
 }
@@ -13,17 +15,26 @@ NodeInterfaceMemory::~NodeInterfaceMemory()
 
 }
 
-std::list<std::shared_ptr<NodeInterface>> NodeInterfaceMemory::getChildren()
+bool NodeInterfaceMemory::getNextChild(std::shared_ptr<NodeInterface>& node)
 {
-	std::list<std::shared_ptr<NodeInterface>> ret;
-	for (auto it = m_node->m_childNodes.begin(); it != m_node->m_childNodes.end(); it++) {
-		ret.push_back(
-			std::shared_ptr<NodeInterface>(
-				new NodeInterfaceMemory(*it, m_node)
-			)
-		);
+	if (m_itInitialized) {
+		if (!m_deleted)
+			++m_it;
 	}
-	return ret;
+	else {
+		m_it = m_node->m_childNodes.begin();
+		m_itInitialized = true;
+	}
+	m_deleted = false;
+
+	if (m_it == m_node->m_childNodes.end())
+		return false;
+	else {
+		node = std::shared_ptr<NodeInterface>{
+			new NodeInterfaceMemory(*m_it, m_node)
+		};
+		return true;
+	}
 }
 
 void NodeInterfaceMemory::addChild(MoveInput mi)
@@ -31,19 +42,13 @@ void NodeInterfaceMemory::addChild(MoveInput mi)
 	m_node->addChild(mi);
 }
 
-void NodeInterfaceMemory::deleteThisNode()
+void NodeInterfaceMemory::deleteCurrentChild()
 {
-	for (auto it = m_parentNode->m_childNodes.begin(); it != m_parentNode->m_childNodes.end(); it++) {
-		if ((*it)->m_mi.pathId == m_node->m_mi.pathId &&
-			(*it)->m_mi.direction == m_node->m_mi.direction &&
-			(*it)->m_mi.singleStep == m_node->m_mi.singleStep) {
-			m_parentNode->m_childNodes.erase(it);
-			return;
-		}
-	}
+	m_it = m_node->m_childNodes.erase(m_it);
+	m_deleted = true;
 }
 
-MoveInput NodeInterfaceMemory::getMoveInput()
+GameInput NodeInterfaceMemory::getGameInput()
 {
 	return m_node->m_mi;
 }

@@ -6,9 +6,9 @@ NodeInterface::NodeInterface()
 
 }
 
-std::list<std::shared_ptr<NodeInterface>> NodeInterface::getChildren()
+bool NodeInterface::getNextChild(std::shared_ptr<NodeInterface>& node)
 {
-	return std::list<std::shared_ptr<NodeInterface>>{};
+	return false;
 }
 
 void NodeInterface::addChild(MoveInput mi)
@@ -16,12 +16,12 @@ void NodeInterface::addChild(MoveInput mi)
 
 }
 
-void NodeInterface::deleteThisNode()
+void NodeInterface::deleteCurrentChild()
 {
 
 }
 
-MoveInput NodeInterface::getMoveInput()
+GameInput NodeInterface::getGameInput()
 {
-	return MoveInput();
+	return GameInput();
 }
