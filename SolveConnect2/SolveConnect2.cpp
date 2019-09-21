@@ -13,7 +13,7 @@
 #include "Misc.h"
 
 
-//#define doBenchmarking
+#define doBenchmarking
 
 int main()
 {

@@ -7,6 +7,9 @@
 #include "MoveInputTreeSqliteFast.h"
 #include "SolvedInterfaceComplete.h"
 #include "SolvedInterfaceHash.h"
+#include "Misc.h"
+
+#define doBenchmarking
 
 
 Recursor::Recursor(Connect2 game, SolveOptions so) :
@@ -54,14 +57,51 @@ Recursor::Recursor(Connect2 game, SolveOptions so) :
 	}
 
 	m_idManager->addIdIsUnique(game.getIdStr());
+	#ifdef doBenchmarking
+	m_bmFile = std::ofstream("benchmarks.txt");
+	m_bmFile.clear();
+	m_bmFile << "[Depth - Paths - Evaluated]\n\n";
+	#endif
+}
+
+Recursor::~Recursor()
+{
+	#ifdef doBenchmarking
+	m_bmFile.close();
+	#endif
 }
 
 void Recursor::addNextInputs()
 {
 	m_numBranches = 0;
 	auto node = m_mit->getStartNode();
+
+	#ifdef doBenchmarking
+	m_bm.clearAllTimes();
+	m_bm.resetTimer("TotalTime");
+	#endif
 	recurse(&*node, true);
+	#ifdef doBenchmarking
+	m_bm.addTime("TotalTime");
+	#endif
+
 	m_depth++;
+
+	#ifdef doBenchmarking
+	m_bmFile << Misc::formatIntWithCommas(m_depth) << " - " <<
+		Misc::formatIntWithCommas(m_numBranches) << " - " <<
+		Misc::formatIntWithCommas(m_movesEvaluated) << "\n";
+	
+	m_bmFile << "This recursion:\n";
+	m_bmFile << m_bm.getStr("TotalTime") << "\n";
+	std::list<std::string> pieces{ "Connect2::moveAll", "Connect2::getGameId", "IdManager::idIsUnique",
+		"NodeInterface::getNextChild", "NodeInterface::deleteCurrentChild", "NodeInterface::addChild" };
+	m_bmFile << m_bm.getPieChartStr(pieces) << "\n";
+
+	m_bmFile << "Running total:\n";
+	m_bmFile << m_bm.getTotalStr("TotalTime") << "\n";
+	m_bmFile << m_bm.getPieChartTotalStr(pieces) << "\n\n";
+	#endif
 }
 
 bool Recursor::recurse(NodeInterface* node, bool first)
@@ -75,23 +115,36 @@ bool Recursor::recurse(NodeInterface* node, bool first)
 	int childCountBefore = 0;
 	int childCountAfter = 0;
 	std::shared_ptr<NodeInterface> childNode;
-	while (node->getNextChild(childNode)) {
+	while (true) {
+		#ifdef doBenchmarking
+		m_bm.resetTimer("NodeInterface::getNextChild");
+		#endif
+		bool hasAnotherChild = node->getNextChild(childNode);
+		#ifdef doBenchmarking
+		m_bm.addTime("NodeInterface::getNextChild");
+		#endif
+		if (!hasAnotherChild)
+			break;
 		childCountBefore++;
 		childCountAfter++;
 		bool nextNodeHasValidBranches = recurse(&*childNode);
 		if (!nextNodeHasValidBranches) {
+			#ifdef doBenchmarking
+			m_bm.resetTimer("NodeInterface::deleteCurrentChild");
+			#endif
 			node->deleteCurrentChild();
+			#ifdef doBenchmarking
+			m_bm.addTime("NodeInterface::deleteCurrentChild");
+			#endif
 			childCountAfter--;
 		}
 	}
 
 	bool thisNodeHasValidBranches = false;
-	if (childCountBefore == 0) {
+	if (childCountBefore == 0)
 		thisNodeHasValidBranches = addValidMoves(node);
-	}
-	else {
+	else
 		thisNodeHasValidBranches = childCountAfter > 0;
-	}
 
 	if (!first)
 		m_gi.miArr.erase(it, m_gi.miArr.end());
@@ -102,12 +155,12 @@ bool Recursor::recurse(NodeInterface* node, bool first)
 bool Recursor::addValidMoves(NodeInterface* node)
 {
 	#ifdef doBenchmarking
-	Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
+	m_bm.resetTimer("Connect2::moveAll");
 	#endif
 	m_game = m_gameStart;
 	m_game.moveAll(m_gi);
 	#ifdef doBenchmarking
-	Benchmarker::addTime("moveAll"); // ## for benchmarking ##
+	m_bm.addTime("Connect2::moveAll");
 	#endif
 	
 	bool movesWereAdded = false;
@@ -148,11 +201,11 @@ bool Recursor::addMove(NodeInterface* node, MoveInput& mi)
 	m_movesEvaluated++;
 	bool moveAdded = false;
 	#ifdef doBenchmarking
-	Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
+	m_bm.resetTimer("Connect2::moveAll");
 	#endif
 	bool moveIsValid = m_game.move(mi);
 	#ifdef doBenchmarking
-	Benchmarker::addTime("moveAll"); // ## for benchmarking ##
+	m_bm.addTime("Connect2::moveAll");
 	#endif
 
 	if (!moveIsValid)
@@ -166,55 +219,57 @@ bool Recursor::addMove(NodeInterface* node, MoveInput& mi)
 		solutionGi.miArr.push_back(mi);
 		addSolution(solutionGi);
 		#ifdef doBenchmarking
-		Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
+		m_bm.resetTimer("Connect2::moveAll");
 		#endif
 		m_game.undo(); // Only undo if the move was valid.
 		#ifdef doBenchmarking
-		Benchmarker::addTime("moveAll"); // ## for benchmarking ##
+		m_bm.addTime("Connect2::moveAll");
 		#endif
 		return moveAdded;
 	}
 
-	#ifdef doBenchmarking
-	Benchmarker::resetTimer("getGameId"); // ## for benchmarking ##
-	#endif
-	std::string id = m_game.getIdStr();
-	#ifdef doBenchmarking
-	Benchmarker::addTime("getGameId"); // ## for benchmarking ##
-	Benchmarker::resetTimer("idIsUnique"); // ## for benchmarking ##
-	#endif
-	bool isUnique = m_idManager->addIdIsUnique(id);
-	#ifdef doBenchmarking
-	Benchmarker::addTime("idIsUnique"); // ## for benchmarking ##
-	#endif
-	if (!isUnique) { // If game id already exists
+	if (!m_solveEndPos) {
 		#ifdef doBenchmarking
-		Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
+		m_bm.resetTimer("Connect2::getGameId");
 		#endif
-		m_game.undo(); // Only undo if the move was valid.
+		std::string id = m_game.getIdStr();
 		#ifdef doBenchmarking
-		Benchmarker::addTime("moveAll"); // ## for benchmarking ##
+		m_bm.addTime("Connect2::getGameId");
+		m_bm.resetTimer("IdManager::idIsUnique");
 		#endif
-		return moveAdded;
+		bool isUnique = m_idManager->addIdIsUnique(id);
+		#ifdef doBenchmarking
+		m_bm.addTime("IdManager::idIsUnique");
+		#endif
+		if (!isUnique) { // If game id already exists
+			#ifdef doBenchmarking
+			m_bm.resetTimer("Connect2::moveAll");
+			#endif
+			m_game.undo(); // Only undo if the move was valid.
+			#ifdef doBenchmarking
+			m_bm.addTime("Connect2::moveAll");
+			#endif
+			return moveAdded;
+		}
 	}
 	m_movesEvaluatedUnique++;
 	
 	#ifdef doBenchmarking
-	Benchmarker::resetTimer("addInput"); // ## for benchmarking ##
+	m_bm.resetTimer("NodeInterface::addChild");
 	#endif
 	node->addChild(mi);
 	#ifdef doBenchmarking
-	Benchmarker::addTime("addInput"); // ## for benchmarking ##
+	m_bm.addTime("NodeInterface::addChild");
 	#endif
 	moveAdded = true;
-	m_numBranches++; // for display
+	m_numBranches++;
 	
 	#ifdef doBenchmarking
-	Benchmarker::resetTimer("moveAll"); // ## for benchmarking ##
+	m_bm.resetTimer("Connect2::moveAll");
 	#endif
 	m_game.undo(); // Only undo if the move was valid.
 	#ifdef doBenchmarking
-	Benchmarker::addTime("moveAll"); // ## for benchmarking ##
+	m_bm.addTime("Connect2::moveAll");
 	#endif
 	return moveAdded;
 }

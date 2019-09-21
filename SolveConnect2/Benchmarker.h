@@ -8,22 +8,21 @@
 class Benchmarker
 {
 public:
-	Benchmarker() = delete;
-	
-public:
-	static void clearAllTimes();
-	static void clearTime(std::string id);
-	static void resetTimer(std::string id);
-	static void addTime(std::string id);
-	static std::string getStr(std::string name);
-	static std::string getPieChartStr(std::list<std::string> pieceName);
-	static std::string getTotalStr(std::string name);
-	static std::string getPieChartTotalStr(std::list<std::string> pieceName);
+	Benchmarker();
+	void clearAllTimes();
+	void hardClearEverything();
+	void clearTime(std::string id);
+	void resetTimer(std::string id);
+	void addTime(std::string id);
+	std::string getStr(std::string name);
+	std::string getPieChartStr(std::list<std::string> pieceName);
+	std::string getTotalStr(std::string name);
+	std::string getPieChartTotalStr(std::list<std::string> pieceName);
 
-private:
-	static int getLength();
+protected:
+	int getLength();
 
-	static std::map<std::string, long long> m_stats;
-	static std::map<std::string, long long> m_statTotals;
-	static std::map<std::string, HighResolutionTimer> m_timers;
+	std::map<std::string, long long> m_stats;
+	std::map<std::string, long long> m_statTotals;
+	std::map<std::string, HighResolutionTimer> m_timers;
 };

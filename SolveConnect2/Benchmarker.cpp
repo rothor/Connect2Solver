@@ -2,11 +2,17 @@
 #include "Misc.h"
 
 
-std::map<std::string, long long> Benchmarker::m_stats;
-std::map<std::string, long long> Benchmarker::m_statTotals;
-std::map<std::string, HighResolutionTimer> Benchmarker::m_timers;
+Benchmarker::Benchmarker()
+{
+
+}
 
 void Benchmarker::clearAllTimes()
+{
+	m_stats.clear();
+}
+
+void Benchmarker::hardClearEverything()
 {
 	m_stats.clear();
 	m_timers.clear();

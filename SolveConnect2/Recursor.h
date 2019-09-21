@@ -2,6 +2,7 @@
 #include <memory>
 #include <list>
 #include <string>
+#include <fstream>
 #include "GameInput.h"
 #include "Connect2.h"
 #include "IdManager.h"
@@ -9,12 +10,14 @@
 #include "SolvedInterface.h"
 #include "SolveOptions.h"
 #include "NodeInterface.h"
+#include "Benchmarker.h"
 
 
 class Recursor
 {
 public:
 	Recursor(Connect2 game, SolveOptions so);
+	~Recursor();
 	void addNextInputs();
 	std::string getDisplayStr();
 	bool isSolved();
@@ -41,6 +44,8 @@ protected:
 	std::unique_ptr<MoveInputTree> m_mit;
 	std::unique_ptr<SolvedInterface> m_si;
 	bool m_solveEndPos;
+	Benchmarker m_bm;
+	std::ofstream m_bmFile;
 
 	int m_movesEvaluated;
 	int m_movesEvaluatedValid;
