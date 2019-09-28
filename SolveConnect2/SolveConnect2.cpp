@@ -26,7 +26,6 @@ int main()
 	char charSolveToCurrent = 'c';
 	char charSolveFromCurrent = 'v';
 	char charReset = 't';
-	char charReload = 'm';
 	char charSave = 'g';
 	char charLoad = 'h';
 	char charDisplaySolution = 'i';
@@ -36,7 +35,7 @@ int main()
 	char charSolveEndState = 'y';
 	std::string charSqlite = "l";
 
-	std::string fileName = "level.txt";
+	std::string fileName = "levels/1.txt";
 
 	Connect2 game(fileName);
 	SolutionInputManager sim(game);
@@ -59,7 +58,6 @@ int main()
 		bool move = false;
 		bool undo = false;
 		bool solve = false;
-		bool reload = false;
 		bool saveGame = false;
 		bool solveToCurrentPos = false;
 		bool solveFromCurrentPos = false;
@@ -101,8 +99,6 @@ int main()
 				displaySolution = true;
 			else if (input[0] == charPlaySolution)
 				playSolution = true;
-			else if (input[0] == charReload)
-				reload = true;
 			else if (input[0] == charSave)
 				saveGame = true;
 			else if (input[0] == charLoad)
@@ -169,13 +165,6 @@ int main()
 			SolveOptions so(sqliteHashtable, sqliteTree, solveEndState, solveToCurrentPos || solveFromCurrentPos);
 			Connect2Solver::solve(game, so);
 		}
-		else if (reload) {
-			game = Connect2(fileName);
-			sim = SolutionInputManager(game);
-			gameSave = game;
-			simSave = SolutionInputManager(game);
-			std::cout << "Reloaded level from file 'level.txt'.\n";
-		}
 		else if (saveGame) {
 			gameSave = game;
 			simSave = sim;
@@ -229,12 +218,12 @@ int main()
 		}
 		else if (help) {
 			std::cout << "===================== List of commands =====================\n";
+			std::cout << "load <level name> : load the level from the 'levels' folder : ex) load 1\n";
 			std::cout << "<number>" << charLeft << " : Move a path left : ex) 1" << charLeft << "\n";
 			std::cout << "<number>" << charRight << " : Move a path right : ex) 1" << charRight << "\n";
 			std::cout << "<number>" << charUp << " : Move a path up : ex) 1" << charUp << "\n";
 			std::cout << "<number>" << charDown << " : Move a path down : ex) 1" << charDown << "\n";
 			std::cout << charReset << " : Reset the board : ex) " << charReset << "\n";
-			std::cout << charReload << " : Reload the board from the file " << fileName << " : ex) " << charReload << "\n";
 			std::cout << charSave << " : Save the current board state : ex) " << charSave << "\n";
 			std::cout << charLoad << " : Load the saved board state : ex) " << charLoad << "\n";
 			std::cout << charLoadGameInput << " <inputs> : Do all the typed moves : ex) " << charLoadGameInput << " 1" << charDown << " 1" << charRight << " 2" << charLeft << " 2" << charUp << " 1" << charRight << "\n";

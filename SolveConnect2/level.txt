@@ -1,5 +1,0 @@
-w 6 h 4
-n     n     n     n     n     n
-n     b     e1    n     b     n
-n     b     s1-19 n     b     n
-n     n     n     n     n     n

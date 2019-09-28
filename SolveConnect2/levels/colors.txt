@@ -1,0 +1,6 @@
+w 9 h 5
+s1-4 s2-4 s3-4 s4-4 s5-4 s6-4 s7-4 s8-4 s9-4
+n n n n n n n n n
+n n n n n n n n n
+n n n n n n n n n
+e1 e2 e3 e4 e5 e6 e7 e8 e9
