@@ -13,8 +13,6 @@
 #include "Misc.h"
 
 
-#define doBenchmarking
-
 int main()
 {
 	char charLeft = 's';

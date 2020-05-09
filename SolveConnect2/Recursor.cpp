@@ -9,7 +9,7 @@
 #include "SolvedInterfaceHash.h"
 #include "Misc.h"
 
-#define doBenchmarking
+//#define doBenchmarking
 
 
 Recursor::Recursor(Connect2 game, SolveOptions so) :
@@ -203,7 +203,11 @@ bool Recursor::addMove(NodeInterface* node, MoveInput& mi)
 	#ifdef doBenchmarking
 	m_bm.resetTimer("Connect2::moveAll");
 	#endif
-	bool moveIsValid = m_game.move(mi);
+	bool moveIsValid;
+	if (!m_solveEndPos)
+		moveIsValid = m_game.move(mi);
+	else
+		moveIsValid = m_game.moveOnlyDo(mi);
 	#ifdef doBenchmarking
 	m_bm.addTime("Connect2::moveAll");
 	#endif
