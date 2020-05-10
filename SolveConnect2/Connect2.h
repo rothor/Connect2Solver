@@ -23,7 +23,7 @@ public:
 	void reset();
 	bool pathIsSolved(int pathId);
 	bool pathIsFull(int pathId);
-	bool pathCanBeSolved(int pathId);
+	bool pathCanBeSolvedQuick(int pathId);
 	bool portalsExist();
 	std::vector<int>* getPathIdsOrderedByLength();
 	bool sortPathLength(int a, int b);
@@ -45,6 +45,7 @@ protected:
 	int m_height;
 	std::vector<int> m_pathLengthVec;
 	bool m_portalsExist;
+	std::vector<std::vector<Point>> m_portalPairArr;
 
 	int m_lastPathMoved;
 	int m_lastPathMovedLength;

@@ -48,7 +48,23 @@ Connect2::Connect2(std::string fileName) :
 					maxId = pathId;
 			}
 			else if (tile[0] == char('p')) {
-				m_portalsExist = true;
+				bool exists = false;
+				for (auto ptPair : m_portalPairArr) {
+					if (ptPair[1].equals(Point(x, y)) || ptPair[2].equals(Point(x, y))) {
+						exists = true;
+						break;
+					}
+				}
+				if (!exists) {
+					std::string pos = tile.substr(1);
+					int hyphen = pos.find_first_of(char('-'));
+					std::string xStr = pos.substr(0, hyphen);
+					std::string yStr = pos.substr(hyphen + 1);
+					int xInt = std::stoi(xStr) - 1;
+					int yInt = std::stoi(yStr) - 1;
+					std::vector<Point> portalVec{ Point(x, y), Point(xInt, yInt) };
+					m_portalPairArr.push_back(portalVec);
+				}
 			}
 		}
 	}
@@ -349,11 +365,24 @@ bool Connect2::pathIsFull(int pathId)
 	return m_path[pathId].isFull();
 }
 
-bool Connect2::pathCanBeSolved(int pathId)
+bool Connect2::pathCanBeSolvedQuick(int pathId)
 {
+	pathId -= 1;
 	Point pos = m_path[pathId].getPos();
-	int dist = abs(pos.x - m_endPointArr[pathId].x) + abs(pos.y - m_endPointArr[pathId].y);
-	return m_path[pathId].getMaxLength() - m_path[pathId].getLength() >= dist;
+	Point endPos = m_endPointArr[pathId];
+	int dist = pos.dist(endPos);
+	int remainingLength = m_path[pathId].getMaxLength() - m_path[pathId].getLength();
+	if (remainingLength >= dist)
+		return true;
+	for (auto pair : m_portalPairArr) {
+		int portalDist = pos.dist(pair[1]) + endPos.dist(pair[2]) + 1;
+		if (remainingLength >= portalDist)
+			return true;
+		portalDist = pos.dist(pair[2]) + endPos.dist(pair[1]) + 1;
+		if (remainingLength >= portalDist)
+			return true;
+	}
+	return false;
 }
 
 bool Connect2::portalsExist()
