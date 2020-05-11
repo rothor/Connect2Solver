@@ -50,7 +50,7 @@ Connect2::Connect2(std::string fileName) :
 			else if (tile[0] == char('p')) {
 				bool exists = false;
 				for (auto ptPair : m_portalPairArr) {
-					if (ptPair[1].equals(Point(x, y)) || ptPair[2].equals(Point(x, y))) {
+					if (ptPair[0].equals(Point(x, y)) || ptPair[1].equals(Point(x, y))) {
 						exists = true;
 						break;
 					}
@@ -375,10 +375,10 @@ bool Connect2::pathCanBeSolvedQuick(int pathId)
 	if (remainingLength >= dist)
 		return true;
 	for (auto pair : m_portalPairArr) {
-		int portalDist = pos.dist(pair[1]) + endPos.dist(pair[2]) + 1;
+		int portalDist = pos.dist(pair[0]) + endPos.dist(pair[1]) + 1;
 		if (remainingLength >= portalDist)
 			return true;
-		portalDist = pos.dist(pair[2]) + endPos.dist(pair[1]) + 1;
+		portalDist = pos.dist(pair[1]) + endPos.dist(pair[0]) + 1;
 		if (remainingLength >= portalDist)
 			return true;
 	}
