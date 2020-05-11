@@ -258,16 +258,33 @@ bool Recursor::addMove(NodeInterface* node, MoveInput& mi)
 	}
 	m_movesEvaluatedUnique++;
 	
-	if (!m_game.pathCanBeSolvedQuick(mi.pathId)) {
-		#ifdef doBenchmarking
-		m_bm.resetTimer("Connect2::moveAll");
-		#endif
-		m_game.undo(); // Only undo if the move was valid.
-		#ifdef doBenchmarking
-		m_bm.addTime("Connect2::moveAll");
-		#endif
-		return moveAdded;
+	if (m_solveEndPos) {
+		if (m_game.pathIsFull(mi.pathId)) {
+			if (!m_game.pathIsSolved(mi.pathId)) {
+				#ifdef doBenchmarking
+				m_bm.resetTimer("Connect2::moveAll");
+				#endif
+				m_game.undo(); // Only undo if the move was valid.
+				#ifdef doBenchmarking
+				m_bm.addTime("Connect2::moveAll");
+				#endif
+				return moveAdded;
+			}
+		}
+		else if (!m_game.pathCanBeSolvedQuick(mi.pathId)) {
+			#ifdef doBenchmarking
+			m_bm.resetTimer("Connect2::moveAll");
+			#endif
+			m_game.undo(); // Only undo if the move was valid.
+			#ifdef doBenchmarking
+			m_bm.addTime("Connect2::moveAll");
+			#endif
+			return moveAdded;
+		}
 	}
+
+
+
 	#ifdef doBenchmarking
 	m_bm.resetTimer("NodeInterface::addChild");
 	#endif

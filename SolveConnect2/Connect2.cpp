@@ -372,14 +372,17 @@ bool Connect2::pathCanBeSolvedQuick(int pathId)
 	Point endPos = m_endPointArr[pathId];
 	int dist = pos.dist(endPos);
 	int remainingLength = m_path[pathId].getMaxLength() - m_path[pathId].getLength();
-	if (remainingLength >= dist)
+	int remainingLengthMod = remainingLength % 2;
+	if (remainingLength >= dist && remainingLengthMod == dist % 2)
 		return true;
 	for (auto pair : m_portalPairArr) {
+		if (m_boardOccupy.isOccupied(pair[0]))
+			continue;
 		int portalDist = pos.dist(pair[0]) + endPos.dist(pair[1]) + 1;
-		if (remainingLength >= portalDist)
+		if (remainingLength >= portalDist && remainingLengthMod == portalDist % 2)
 			return true;
 		portalDist = pos.dist(pair[1]) + endPos.dist(pair[0]) + 1;
-		if (remainingLength >= portalDist)
+		if (remainingLength >= portalDist && remainingLengthMod == portalDist % 2)
 			return true;
 	}
 	return false;
