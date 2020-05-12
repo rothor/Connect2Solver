@@ -311,6 +311,81 @@ bool staticMoveDo(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOcc
 	return true;
 }
 
+bool staticMoveDoPathCheck(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy, bool singleStep, Point endPt, bool& reachedEndPt)
+{
+	reachedEndPt = false;
+	Direction newDirection = mi.direction;
+	bool reset = false;
+	bool forced = false;
+	int startLength = path.getLength();
+	int lastValidLength = startLength;
+
+	while (true) {
+		// Determine if we can do move
+		path.setNewDirection(newDirection);
+		Point ptDest = path.getDestPoint();
+		if (ptDest.equals(endPt)) {
+			reachedEndPt = true;
+			return true;
+		}
+		Point ptStart = path.getPos();
+		PathInfoForBoard info = path.getInfoForBoard();
+		info.maxLength = 1;
+		info.length = 0;
+		MoveInstructions instr = board.getMoveInstructions(ptStart, ptDest, info);
+		if (instr.mustTeleport) {
+			ptDest = instr.teleportPoint;
+			instr = board.getMoveInstructions(ptStart, ptDest, path.getInfoForBoard());
+		}
+		if (instr.resetIfOnlyForcedMovesAfter)
+			reset = true;
+		forced = instr.isForced;
+		if (!forced)
+			reset = false;
+		if (path.isFull() || boardOccupy.isOccupied(ptDest) || !instr.canEnter)
+			break;
+
+		// Set stuff pre-move
+		if (!forced)
+			lastValidLength = path.getLength();
+
+		// Do move
+		PathMove pathMove(ptStart, ptDest, newDirection, forced, instr.mustTeleport);
+		path.doMove(pathMove);
+		boardOccupy.setOccupied(ptDest, true);
+
+		// Set stuff
+		if (instr.changeDirectionAfterMove)
+			newDirection = instr.newDirection;
+
+		if (singleStep && instr.canStop) {
+			reset = false;
+			forced = false; // eh...
+			break;
+		}
+	}
+
+	if (reset) {
+		while (path.getLength() > startLength) {
+			PathMove pathMove = path.getLastMove();
+			boardOccupy.setOccupied(pathMove.ptDest, false);
+			path.undoLastMove();
+		}
+	}
+	else if (forced) {
+		while (path.getLength() > lastValidLength) {
+			PathMove pathMove = path.getLastMove();
+			boardOccupy.setOccupied(pathMove.ptDest, false);
+			path.undoLastMove();
+		}
+	}
+
+	if (path.getLength() == startLength)
+		return false;
+
+	return true;
+}
+
 bool staticMoveUndo(Path& path, Board& board, BoardOccupy& boardOccupy, bool singleStep)
 {
 	if (!path.havePreviousMoves())
@@ -365,6 +440,8 @@ bool Connect2::pathIsFull(int pathId)
 	return m_path[pathId].isFull();
 }
 
+// Note: this shouldn't be used if there is more than one pair of portals. Currently bugged
+// if there are more.
 bool Connect2::pathCanBeSolvedQuick(int pathId)
 {
 	pathId -= 1;
@@ -386,6 +463,58 @@ bool Connect2::pathCanBeSolvedQuick(int pathId)
 			return true;
 	}
 	return false;
+}
+
+class PointLength
+{
+public:
+	PointLength(Point pt, int length) :
+		pt(pt),
+		length(length)
+	{}
+	Point pt;
+	int length;
+};
+
+bool getNextPoints(Board& b, BoardOccupy& bo, std::list<PointLength>& v, int maxLen, Point endPt)
+{
+	std::list<PointLength> newV;
+	std::list<Direction> directions{ Direction::down, Direction::up, Direction::left, Direction::right };
+	for (PointLength pl : v) {
+		for (Direction direction : directions) {
+			Path path(0, 9999, pl.pt); // 9999 is just an arbitrarily large number
+			MoveInput mi = MoveInput(path.getId(), direction);
+			bool pathFound;
+			bool valid = staticMoveDoPathCheck(mi, path, b, bo, true, endPt, pathFound);
+			if (pathFound)
+				return true;
+			if (valid) {
+				for (int i = 1; i < path.getLength(); i++) {
+					PathMove move = path.getMove(i);
+					bo.setOccupied(move.ptBegin, false);
+				}
+				if (path.getLength() + pl.length < maxLen)
+					newV.push_back(PointLength(path.getPos(), path.getLength() + pl.length));
+			}
+		}
+	}
+	v = newV;
+	return false;
+}
+
+bool Connect2::pathCanBeSolvedSlow(int pathId)
+{
+	std::list<PointLength> v{ PointLength(Point(m_path[pathId].getPos()), 0) };
+	Board b = m_board;
+	BoardOccupy bo = m_boardOccupy;
+	int maxLen = m_path[pathId].getMaxLength() - m_path[pathId].getLength();
+	while (true) {
+		bool pathFound = getNextPoints(b, bo, v, maxLen, m_endPointArr[pathId]);
+		if (pathFound)
+			return true;
+		if (v.size() == 0)
+			return false;
+	}
 }
 
 bool Connect2::portalsExist()

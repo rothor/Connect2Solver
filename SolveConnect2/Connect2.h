@@ -24,6 +24,7 @@ public:
 	bool pathIsSolved(int pathId);
 	bool pathIsFull(int pathId);
 	bool pathCanBeSolvedQuick(int pathId);
+	bool pathCanBeSolvedSlow(int pathId);
 	bool portalsExist();
 	std::vector<int>* getPathIdsOrderedByLength();
 	bool sortPathLength(int a, int b);
