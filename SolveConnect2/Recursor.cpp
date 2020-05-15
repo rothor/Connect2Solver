@@ -62,8 +62,6 @@ Recursor::Recursor(Connect2 game, SolveOptions so) :
 	m_bmFile.clear();
 	m_bmFile << "[Depth - Paths - Evaluated]\n\n";
 	#endif
-	
-	m_timer.reset(); // remove
 }
 
 Recursor::~Recursor()
@@ -165,13 +163,6 @@ bool Recursor::addValidMoves(NodeInterface* node)
 	#ifdef doBenchmarking
 	m_bm.addTime("Connect2::moveAll");
 	#endif
-	
-	// remove
-	/*if (true || m_timer.readMilli() > 5000) {
-		m_timer.reset();
-		std::cout << "\n";
-		m_game.getDisplayStr();
-	}*/
 
 	bool movesWereAdded = false;
 	std::list<Direction> directions{ Direction::down, Direction::up, Direction::left, Direction::right };
@@ -304,6 +295,9 @@ bool Recursor::addMove(NodeInterface* node, MoveInput& mi)
 						if (!solvable)
 							break;
 					}
+				}
+				if (solvable) {
+					solvable = m_game.checkIsland();
 				}
 			}
 			else {

@@ -23,6 +23,8 @@ public:
 	MoveInstructionsEnter getMoveInstructionsEnter(Point ptDest, PathInfoForBoard pathInfo);
 	MoveInstructions getMoveInstructions(Point ptStart, Point ptDest, PathInfoForBoard pathInfo);
 	std::shared_ptr<Tile> getTile(int x, int y);
+	int getWidth();
+	int getHeight();
 
 protected:
 	std::shared_ptr<std::vector<std::vector<std::shared_ptr<Tile>>>> m_tileArr;

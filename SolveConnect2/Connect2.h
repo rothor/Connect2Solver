@@ -24,12 +24,11 @@ public:
 	void reset();
 	bool pathIsSolved(int pathId);
 	bool pathIsFull(int pathId);
-	bool pathCanBeSolvedQuick(int pathId);
 	bool pathCanBeSolvedSlow(int pathId);
 	void analyzeTile(TileTypeCounter& c, Point p);
 	TileTypeCounter analyzeSurroundingTiles(Point p);
 	bool checkPeninsula(std::list<Point> v);
-	bool portalsExist();
+	bool checkIsland();
 	std::vector<int>* getPathIdsOrderedByLength();
 	bool sortPathLength(int a, int b);
 
@@ -51,7 +50,6 @@ protected:
 	int m_width;
 	int m_height;
 	std::vector<int> m_pathLengthVec;
-	bool m_portalsExist;
 	std::vector<std::vector<Point>> m_portalPairArr;
 
 	int m_lastPathMoved;

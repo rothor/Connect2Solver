@@ -87,6 +87,16 @@ MoveInstructions Board::getMoveInstructions(Point ptStart, Point ptDest, PathInf
 		getMoveInstructionsExit(ptStart, pathInfo));
 }
 
+int Board::getWidth()
+{
+	return m_width;
+}
+
+int Board::getHeight()
+{
+	return m_height;
+}
+
 // This will cause an error if wrong inputs are passed.
 std::shared_ptr<Tile> Board::getTile(int x, int y)
 {

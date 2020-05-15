@@ -12,7 +12,7 @@ bool staticMoveUndo(Path& path, Board& board, BoardOccupy& boardOccupy, bool sin
 
 bool Connect2::sortPathLength(int a, int b)
 {
-	return m_path[a].getMaxLength() > m_path[b].getMaxLength();
+	return m_path[a].getMaxLength() < m_path[b].getMaxLength();
 }
 
 #include <functional>
@@ -22,7 +22,6 @@ Connect2::Connect2(std::string fileName) :
 	m_board(fileName),
 	m_boardOccupy(fileName),
 	m_lastPathMoved(0),
-	m_portalsExist(false),
 	m_lastMoveWasUndo(false),
 	m_lastPathMovedLength(0)
 {
@@ -386,6 +385,71 @@ bool staticMoveDoPathCheck(MoveInput& mi, Path& path, Board& board, BoardOccupy&
 	return true;
 }
 
+bool staticMoveDoIslandCheck(MoveInput& mi, Path& path, Board& board, BoardOccupy& boardOccupy, bool singleStep)
+{
+	Direction newDirection = mi.direction;
+	bool reset = false;
+	bool forced = false;
+	int startLength = path.getLength();
+	int lastValidLength = startLength;
+
+	while (true) {
+		// Determine if we can do move
+		path.setNewDirection(newDirection);
+		Point ptDest = path.getDestPoint();
+		Point ptStart = path.getPos();
+		PathInfoForBoard info = path.getInfoForBoard();
+		info.maxLength = 1;
+		info.length = 0;
+		MoveInstructions instr = board.getMoveInstructions(ptStart, ptDest, info);
+		if (instr.mustTeleport) {
+			ptDest = instr.teleportPoint;
+			instr = board.getMoveInstructions(ptStart, ptDest, path.getInfoForBoard());
+		}
+		if (ptDest.x >= 0 && ptDest.x < board.getWidth() && ptDest.y >= 0 && ptDest.y < board.getHeight() && board.getTile(ptDest.x, ptDest.y)->m_type == TileType::end) {
+			instr.canEnter = true;
+		}
+		if (instr.resetIfOnlyForcedMovesAfter)
+			reset = true;
+		forced = instr.isForced;
+		if (!forced)
+			reset = false;
+		if (path.isFull() || boardOccupy.isOccupied(ptDest) || !instr.canEnter)
+			break;
+
+		// Set stuff pre-move
+		if (!forced)
+			lastValidLength = path.getLength();
+
+		// Do move
+		PathMove pathMove(ptStart, ptDest, newDirection, forced, instr.mustTeleport);
+		path.doMove(pathMove);
+		//boardOccupy.setOccupied(ptDest, true);
+
+		// Set stuff
+		if (instr.changeDirectionAfterMove)
+			newDirection = instr.newDirection;
+
+		if (singleStep && instr.canStop) {
+			reset = false;
+			forced = false; // eh...
+			break;
+		}
+	}
+
+	if (reset) {
+		return false;
+	}
+	else if (forced) {
+		return false;
+	}
+
+	if (path.getLength() == startLength)
+		return false;
+
+	return true;
+}
+
 bool staticMoveUndo(Path& path, Board& board, BoardOccupy& boardOccupy, bool singleStep)
 {
 	if (!path.havePreviousMoves())
@@ -440,31 +504,6 @@ bool Connect2::pathIsFull(int pathId)
 	return m_path[pathId].isFull();
 }
 
-// Note: this shouldn't be used if there is more than one pair of portals. Currently bugged
-// if there are more.
-bool Connect2::pathCanBeSolvedQuick(int pathId)
-{
-	pathId -= 1;
-	Point pos = m_path[pathId].getPos();
-	Point endPos = m_endPointArr[pathId];
-	int dist = pos.dist(endPos);
-	int remainingLength = m_path[pathId].getMaxLength() - m_path[pathId].getLength();
-	int remainingLengthMod = remainingLength % 2;
-	if (remainingLength >= dist && remainingLengthMod == dist % 2)
-		return true;
-	for (auto pair : m_portalPairArr) {
-		if (m_boardOccupy.isOccupied(pair[0]))
-			continue;
-		int portalDist = pos.dist(pair[0]) + endPos.dist(pair[1]) + 1;
-		if (remainingLength >= portalDist && remainingLengthMod == portalDist % 2)
-			return true;
-		portalDist = pos.dist(pair[1]) + endPos.dist(pair[0]) + 1;
-		if (remainingLength >= portalDist && remainingLengthMod == portalDist % 2)
-			return true;
-	}
-	return false;
-}
-
 class PointLength
 {
 public:
@@ -505,11 +544,10 @@ bool getNextPoints(Board& b, BoardOccupy& bo, std::list<PointLength>& v, int max
 bool Connect2::pathCanBeSolvedSlow(int pathId)
 {
 	std::list<PointLength> v{ PointLength(Point(m_path[pathId].getPos()), 0) };
-	Board b = m_board;
 	BoardOccupy bo = m_boardOccupy;
 	int maxLen = m_path[pathId].getMaxLength() - m_path[pathId].getLength();
 	while (true) {
-		bool pathFound = getNextPoints(b, bo, v, maxLen, m_endPointArr[pathId]);
+		bool pathFound = getNextPoints(m_board, bo, v, maxLen, m_endPointArr[pathId]);
 		if (pathFound)
 			return true;
 		if (v.size() == 0)
@@ -625,9 +663,50 @@ bool Connect2::checkPeninsula(std::list<Point> v)
 	return true;
 }
 
-bool Connect2::portalsExist()
+void getNextPointsIsland(Board& b, BoardOccupy& boOrig, BoardOccupy& boTally, std::list<Point>& v)
 {
-	return m_portalsExist;
+	std::list<Point> newV;
+	std::list<Direction> directions{ Direction::down, Direction::up, Direction::left, Direction::right };
+	for (Point pt : v) {
+		for (Direction direction : directions) {
+			Path path(0, 9999, pt); // 9999 is just an arbitrarily large number
+			MoveInput mi = MoveInput(path.getId(), direction);
+			bool valid = staticMoveDoIslandCheck(mi, path, b, boOrig, true);
+			if (valid && !boTally.isOccupied(path.getPos())) {
+				newV.push_back(path.getPos());
+			}
+			for (int i = 0; i < path.getLength(); i++) {
+				PathMove pm = path.getMove(i);
+				boTally.setOccupied(pm.ptDest, true);
+			}
+		}
+	}
+	v = newV;
+}
+
+// Returns true if there are no islands (and thus the board is valid), false if there are.
+bool Connect2::checkIsland()
+{
+	std::list<Point> v;
+	for (int i = 0; i < m_path.size(); i++) {
+		v.push_back(m_path[i].getPos());
+	}
+	BoardOccupy boOrig = m_boardOccupy;
+	BoardOccupy boTally = m_boardOccupy;
+	while (true) {
+		getNextPointsIsland(m_board, boOrig, boTally, v);
+		if (v.size() == 0)
+			break;
+	}
+
+	for (int x = 0; x < m_width; x++) {
+		for (int y = 0; y < m_height; y++) {
+			TileType type = m_board.getTile(x, y)->m_type;
+			if (type != TileType::block && type != TileType::start && boTally.isOccupied(Point(x, y)) == false)
+				return false;
+		}
+	}
+	return true;
 }
 
 std::vector<int>* Connect2::getPathIdsOrderedByLength()
