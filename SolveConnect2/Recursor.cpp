@@ -62,6 +62,8 @@ Recursor::Recursor(Connect2 game, SolveOptions so) :
 	m_bmFile.clear();
 	m_bmFile << "[Depth - Paths - Evaluated]\n\n";
 	#endif
+	
+	m_timer.reset(); // remove
 }
 
 Recursor::~Recursor()
@@ -152,6 +154,7 @@ bool Recursor::recurse(NodeInterface* node, bool first)
 	return thisNodeHasValidBranches;
 }
 
+#include <iostream> // remove
 bool Recursor::addValidMoves(NodeInterface* node)
 {
 	#ifdef doBenchmarking
@@ -163,6 +166,13 @@ bool Recursor::addValidMoves(NodeInterface* node)
 	m_bm.addTime("Connect2::moveAll");
 	#endif
 	
+	// remove
+	/*if (true || m_timer.readMilli() > 5000) {
+		m_timer.reset();
+		std::cout << "\n";
+		m_game.getDisplayStr();
+	}*/
+
 	bool movesWereAdded = false;
 	std::list<Direction> directions{ Direction::down, Direction::up, Direction::left, Direction::right };
 
@@ -200,6 +210,7 @@ bool Recursor::addMove(NodeInterface* node, MoveInput& mi)
 {
 	m_movesEvaluated++;
 	bool moveAdded = false;
+	int length = m_game.getPathLength(mi.pathId);
 	#ifdef doBenchmarking
 	m_bm.resetTimer("Connect2::moveAll");
 	#endif
@@ -211,6 +222,7 @@ bool Recursor::addMove(NodeInterface* node, MoveInput& mi)
 	#ifdef doBenchmarking
 	m_bm.addTime("Connect2::moveAll");
 	#endif
+	int lengthChange = m_game.getPathLength(mi.pathId) - length;
 
 	if (!moveIsValid)
 		return moveAdded;
@@ -259,6 +271,18 @@ bool Recursor::addMove(NodeInterface* node, MoveInput& mi)
 	m_movesEvaluatedUnique++;
 	
 	if (m_solveEndPos) {
+		std::list<Point> pts = m_game.getLastPathPositions(mi.pathId, lengthChange + 1);
+		if (m_game.checkPeninsula(pts) == false) {
+			#ifdef doBenchmarking
+			m_bm.resetTimer("Connect2::moveAll");
+			#endif
+			m_game.undo(); // Only undo if the move was valid.
+			#ifdef doBenchmarking
+			m_bm.addTime("Connect2::moveAll");
+			#endif
+			return moveAdded;
+		}
+
 		if (m_game.pathIsFull(mi.pathId - 1)) {
 			if (!m_game.pathIsSolved(mi.pathId - 1)) {
 				#ifdef doBenchmarking

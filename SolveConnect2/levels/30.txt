@@ -1,0 +1,11 @@
+w 14 h 10
+n     n     n     b     n     n     n     n     n     b     s2-14 n     n     b
+n     n     n     b     n     e6    n     s5-33 n     n     n     e1    n     n
+n     n     n     n     n     n     n     n     n     n     n     n     n     n
+n     n     n     n     n     n     s6-17 n     n     n     n     n     mtl   n
+s4-17 p1-5  n     n     n     n     n     n     b     p12-3 n     p10-3 p8-1  n
+p2-6  n     e5    n     n     n     n     n     n     n     n     n     b     b
+n     n     n     n     n     n     s3-21 n     n     n     n     n     b     b
+n     mbr   n     n     n     n     n     n     e3    p12-6 n     p10-6 n     mbl
+n     n     mbl   n     n     n     n     n     s1-22 n     n     n     n     n
+n     e4    n     n     e2    n     n     p13-6 b     n     n     n     n     n

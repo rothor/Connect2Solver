@@ -7,6 +7,7 @@
 #include "MoveInput.h"
 #include "BoardOccupy.h"
 #include "GameInput.h"
+#include "TileTypeCounter.h"
 
 
 class Connect2
@@ -25,6 +26,9 @@ public:
 	bool pathIsFull(int pathId);
 	bool pathCanBeSolvedQuick(int pathId);
 	bool pathCanBeSolvedSlow(int pathId);
+	void analyzeTile(TileTypeCounter& c, Point p);
+	TileTypeCounter analyzeSurroundingTiles(Point p);
+	bool checkPeninsula(std::list<Point> v);
 	bool portalsExist();
 	std::vector<int>* getPathIdsOrderedByLength();
 	bool sortPathLength(int a, int b);
@@ -33,6 +37,8 @@ public:
 	int getPathIdFromDisplayId(int pathDisplayId);
 	void getDisplayStr();
 	std::string getIdStr();
+	int getPathLength(int pathDisplayId);
+	std::list<Point> getLastPathPositions(int pathDisplayId, int num);
 
 protected:
 	Path& getPath(int pathDisplayId);

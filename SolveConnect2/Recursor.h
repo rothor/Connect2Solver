@@ -12,6 +12,8 @@
 #include "NodeInterface.h"
 #include "Benchmarker.h"
 
+#include "HighResolutionTimer.h" // remove
+
 
 class Recursor
 {
@@ -52,4 +54,6 @@ protected:
 	int m_movesEvaluatedUnique;
 	int m_depth;
 	int m_numBranches;
+
+	HighResolutionTimer m_timer; // remove
 };

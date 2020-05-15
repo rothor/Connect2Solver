@@ -150,6 +150,9 @@
     <ClCompile Include="NodeInterfaceSqliteFast.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TileTypeCounter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TileNeutral.h">
@@ -285,6 +288,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NodeInterfaceSqliteFast.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TileTypeCounter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

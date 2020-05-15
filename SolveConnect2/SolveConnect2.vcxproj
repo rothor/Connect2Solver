@@ -196,6 +196,7 @@
     <ClCompile Include="TilePortal.cpp" />
     <ClCompile Include="TileStart.cpp" />
     <ClCompile Include="Benchmarker.cpp" />
+    <ClCompile Include="TileTypeCounter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board.h" />
@@ -243,6 +244,7 @@
     <ClInclude Include="TilePortal.h" />
     <ClInclude Include="TileStart.h" />
     <ClInclude Include="Benchmarker.h" />
+    <ClInclude Include="TileTypeCounter.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="sqlite3x64.lib" />

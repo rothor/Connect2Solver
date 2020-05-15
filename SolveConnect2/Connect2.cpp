@@ -12,7 +12,7 @@ bool staticMoveUndo(Path& path, Board& board, BoardOccupy& boardOccupy, bool sin
 
 bool Connect2::sortPathLength(int a, int b)
 {
-	return m_path[a].getMaxLength() < m_path[b].getMaxLength();
+	return m_path[a].getMaxLength() > m_path[b].getMaxLength();
 }
 
 #include <functional>
@@ -517,6 +517,114 @@ bool Connect2::pathCanBeSolvedSlow(int pathId)
 	}
 }
 
+void Connect2::analyzeTile(TileTypeCounter& c, Point p)
+{
+	if (p.x >= 0 && p.x < m_width && p.y >= 0 && p.y < m_height) {
+		TileType type = m_board.getTile(p.x, p.y)->m_type;
+		bool isOccupied = m_boardOccupy.isOccupied(p);
+		if (type == TileType::block) {
+			c.blocked++;
+		}
+		else if (type == TileType::start) {
+			c.start++;
+			for (Path& path : m_path) {
+				if (path.getStartPoint().equals(p)) {
+					if (path.getLength() == 0)
+						c.open++;
+					else
+						c.blocked++;
+					break;
+				}
+				else // error if this happens
+					c.open++;
+			}
+		}
+		else if (type == TileType::end) {
+			c.end++;
+			if (isOccupied)
+				c.blocked++;
+			else
+				c.open++;
+		}
+		else if (type == TileType::portal) {
+			if (isOccupied)
+				c.blocked++;
+			else {
+				c.open++;
+				c.portal++; // we only count it as a usable portal if it is open
+			}
+				
+		}
+		else {
+			if (isOccupied) {
+				bool isEndPath = false;
+				for (Path& path : m_path) {
+					if (path.getPos().equals(p)) {
+						isEndPath = true;
+						break;
+					}
+				}
+				if (isEndPath)
+					c.open++;
+				else
+					c.blocked++;
+			}
+			else {
+				c.open++;
+				c.possiblePeninsula++;
+			}
+		}
+		
+	}
+	else {
+		c.blocked++;
+	}
+}
+
+TileTypeCounter Connect2::analyzeSurroundingTiles(Point p)
+{
+	TileTypeCounter c;
+	analyzeTile(c, Point(p.x - 1, p.y));
+	analyzeTile(c, Point(p.x + 1, p.y));
+	analyzeTile(c, Point(p.x, p.y - 1));
+	analyzeTile(c, Point(p.x, p.y + 1));
+	return c;
+}
+
+// Returns true if there are no invalid peninsulas, false if there are.
+bool Connect2::checkPeninsula(std::list<Point> v)
+{
+	std::list<Point> pp;
+	for (Point p : v) {
+		TileTypeCounter c;
+		Point p2 = Point(p.x - 1, p.y);
+		analyzeTile(c, p2);
+		if (c.possiblePeninsula)
+			pp.push_back(p2);
+		c = TileTypeCounter();
+		p2 = Point(p.x + 1, p.y);
+		analyzeTile(c, p2);
+		if (c.possiblePeninsula)
+			pp.push_back(p2);
+		c = TileTypeCounter();
+		p2 = Point(p.x, p.y - 1);
+		analyzeTile(c, p2);
+		if (c.possiblePeninsula)
+			pp.push_back(p2);
+		c = TileTypeCounter();
+		p2 = Point(p.x, p.y + 1);
+		analyzeTile(c, p2);
+		if (c.possiblePeninsula)
+			pp.push_back(p2);
+	}
+	for (Point p : pp) {
+		TileTypeCounter c = analyzeSurroundingTiles(p);
+		if (c.open == 0 || c.open == 1)
+			return false;
+	}
+	return true;
+}
+
 bool Connect2::portalsExist()
 {
 	return m_portalsExist;
@@ -772,6 +880,21 @@ std::string Connect2::getIdStr()
 		ret += "-" + m_path[i].getMoveArrStr();
 	}
 	return ret;
+}
+
+int Connect2::getPathLength(int pathDisplayId)
+{
+	return m_path[pathDisplayId - 1].getLength();
+}
+
+std::list<Point> Connect2::getLastPathPositions(int pathDisplayId, int num)
+{
+	Path& path = getPath(pathDisplayId);
+	std::list<Point> v{ path.getPos() };
+	for (int i = path.getLength() - 1; i >= path.getLength() - num + 1; i--) {
+		v.push_back(path.getMove(i).ptBegin);
+	}
+	return v;
 }
 
 int Connect2::getPathIdFromDisplayId(int pathDisplayId)
