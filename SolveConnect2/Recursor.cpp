@@ -357,6 +357,30 @@ std::string Recursor::getDisplayStr()
 	return ret;
 }
 
+std::string Recursor::getDisplayStrShort()
+{
+	std::string ret;
+	if (m_solutionFound) {
+		ret += std::to_string(m_solutionList.size()) + " solution" + (m_solutionList.size() > 1 ? "s" : "") + " found in " + std::to_string(m_solutionList.begin()->miArr.size()) + " moves\n";
+		int i = 1;
+		for (auto it = m_solutionList.begin(); it != m_solutionList.end(); it++) {
+			ret += "Solution " + std::to_string(i++) + ":\n";
+			ret += it->getDisplayStr() + "\n";
+			ret += "Save string: " + it->getSaveString();
+			if (std::distance(it, m_solutionList.end()) > 1)
+				ret += "\n\n";
+			if (i > 3)
+				break;
+		}
+		if (m_solutionList.size() > 3)
+			ret += "Remaining solutions written to file.";
+	}
+	else {
+		ret += "Solution not found.";
+	}
+	return ret;
+}
+
 void Recursor::addSolution(GameInput gi)
 {
 	SolutionInputManager sim(m_gameStart);

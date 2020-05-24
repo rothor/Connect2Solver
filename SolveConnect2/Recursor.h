@@ -20,6 +20,7 @@ public:
 	~Recursor();
 	void addNextInputs();
 	std::string getDisplayStr();
+	std::string getDisplayStrShort();
 	bool isSolved();
 	bool solutionWasFound();
 	int getNumBranches();

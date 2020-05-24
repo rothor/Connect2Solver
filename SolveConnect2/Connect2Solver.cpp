@@ -40,7 +40,7 @@ void Connect2Solver::solve(Connect2 game, SolveOptions options)
 	}
 
 	bm.addTime("TotalTime");
-	std::cout << "\n" << tr.getDisplayStr() << "\n";
+	std::cout << "\n" << tr.getDisplayStrShort() << "\n";
 
 	// Output solution to file
 	std::ofstream outSolution("solution.txt");
